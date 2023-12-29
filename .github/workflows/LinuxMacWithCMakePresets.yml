@@ -1,4 +1,4 @@
-name: Build and run with CMakePresets.json
+name: Build and run on Linux and Mac with CMakePresets.json
 
 on:
   push: 
@@ -40,15 +40,8 @@ jobs:
     runs-on: ${{matrix.os}}
 
     steps:
-    - run: echo Platform = ${{matrix.os}}, preset = ${{matrix.preset}}
-
     - name: Checkout repo
       uses: actions/checkout@v4
-
-    - name: Location of repo
-      run: |
-        pwd 
-        ls ${{github.workspace}}
         
     - name: Setup Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
@@ -68,32 +61,29 @@ jobs:
         echo ninja --version
         ninja --version
 
-    - name: >
-        CMake configure ~ 
-        platform = ${{runner.os}} ~ 
-        preset = ${{matrix.preset}} ~
-        linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
+    - name: Parameter values
+      shell: bash
+      run: | 
+        echo platform = ${{runner.os}}
+        echo preset = ${{matrix.preset}}
+        echo linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
+
+    - name: CMake configure
       run: > 
         cmake --preset ${{matrix.preset}}
         -D linkGTestAsSharedLibrary=${{matrix.linkGTestAsSharedLibrary}}
       
-    - name: >
-        CMake build ~ 
-        platform = ${{runner.os}} ~ 
-        preset = ${{matrix.preset}}
+    - name: CMake build
       run: cmake --build --preset ${{matrix.preset}}
 
-    - name: >
-        CMake run program ~ 
-        platform = ${{runner.os}} ~ 
-        preset = ${{matrix.preset}}
+    - name: CMake run program
       run: cmake --build --preset ${{matrix.preset}} --target run
 
-    - name: >
-        CMake run unit tests ~ 
-        platform = ${{runner.os}} ~ 
-        preset = ${{matrix.preset}}
-      run: cmake --build --preset ${{matrix.preset}} --target runUnitTests
+    - name: CMake run unit tests (gtest and gmock)
+      run: cmake --build --preset ${{matrix.preset}} --target runUnitTest
+
+    - name: CTest
+      run: ctest --preset ${{matrix.preset}} --output-on-failure
 
 
   multiConfig:
@@ -122,15 +112,8 @@ jobs:
     runs-on: ${{matrix.os}}
 
     steps:
-    - run: echo Platform = ${{matrix.os}}, preset = ${{matrix.preset}}
-
     - name: Checkout repo
       uses: actions/checkout@v4
-
-    - name: Location of repo
-      run: |
-        pwd 
-        ls ${{github.workspace}}
         
     - name: Setup Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
@@ -150,32 +133,27 @@ jobs:
         echo ninja --version
         ninja --version
 
-    - name: >
-        CMake configure ~ 
-        platform = ${{runner.os}} ~ 
-        preset = ${{matrix.preset}} ~
-        linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
+    - name: Parameter values
+      shell: bash
+      run: | 
+        echo platform = ${{runner.os}}
+        echo preset = ${{matrix.preset}}
+        echo build_type = ${{matrix.build_type}}
+        echo linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
+
+    - name: CMake configure[]
       run: > 
         cmake --preset ${{matrix.preset}}
         -D linkGTestAsSharedLibrary=${{matrix.linkGTestAsSharedLibrary}}
       
-    - name: >
-        CMake build ~ 
-        platform = ${{runner.os}} ~ 
-        preset = ${{matrix.preset}} ~
-        build_type = ${{matrix.build_type}}
+    - name: CMake build
       run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.build_type}}
 
-    - name: >
-        CMake run program ~ 
-        platform = ${{runner.os}} ~ 
-        preset = ${{matrix.preset}} ~
-        build_type = ${{matrix.build_type}}
+    - name: CMake run program
       run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.build_type}} --target run
 
-    - name: >
-        CMake run unit tests ~ 
-        platform = ${{runner.os}} ~ 
-        preset = ${{matrix.preset}} ~
-        build_type = ${{matrix.build_type}}
+    - name: CMake run unit tests (gtest and gmock)
       run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.build_type}} --target runUnitTest
+
+    - name: CTest
+      run: ctest --preset ${{matrix.preset}} --config ${{matrix.build_type}} --output-on-failure

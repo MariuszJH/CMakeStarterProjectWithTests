@@ -1,4 +1,4 @@
-name: Build and run without CMakePresets.json
+name: Build and run on Linux and Mac without CMakePresets.json
 
 on:
   push: 
@@ -36,15 +36,8 @@ jobs:
     runs-on: ${{matrix.os}}
 
     steps:
-    - run: echo Platform = ${{matrix.os}}, compiler = ${{matrix.compilerCpp}}, build type = ${{matrix.buildType}}
-
     - name: Checkout repo
       uses: actions/checkout@v4
-
-    - name: Location of repo
-      run: |
-        pwd 
-        ls ${{github.workspace}}
         
     - name: Setup Ninja
       # if: ${{matrix.generator.name == Ninja}}
@@ -65,13 +58,16 @@ jobs:
         echo ninja --version
         ninja --version
 
-    - name: >
-        CMake configure ~ 
-        platform = ${{runner.os}} ~ 
-        generator = ${{matrix.generator.name}} ~ 
-        build type = ${{matrix.buildType}} ~ 
-        compiler = ${{matrix.compilerCpp.name}} ~
-        linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
+    - name: Parameter values
+      shell: bash
+      run: | 
+        echo platform = ${{runner.os}}
+        echo generator = ${{matrix.generator.name}}
+        echo build_type = ${{matrix.build_type}}
+        echo compiler = ${{matrix.compilerCpp.name}}
+        echo linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
+
+    - name: CMake configure
       run: > 
         cmake -S . 
         -B ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
@@ -80,40 +76,32 @@ jobs:
         -D CMAKE_CXX_COMPILER=${{matrix.compilerCpp.name}}
         -D linkGTestAsSharedLibrary=${{matrix.linkGTestAsSharedLibrary}}
       
-    - name: >
-        CMake build ~ 
-        platform = ${{runner.os}} ~ 
-        generator = ${{matrix.generator.name}} ~ 
-        build type = ${{matrix.buildType}} ~ 
-        compiler = ${{matrix.compilerCpp.name}}
+    - name: CMake build
       run: > 
         cmake 
         --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
         -j8
 
-    - name: >
-        CMake run program ~ 
-        platform = ${{runner.os}} ~ 
-        generator = ${{matrix.generator.name}} ~ 
-        build type = ${{matrix.buildType}} ~ 
-        compiler = ${{matrix.compilerCpp.name}}  
+    - name: CMake run program
       run: > 
         cmake 
         --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
         -j8 
         --target run
 
-    - name: >
-        CMake run unit tests ~ 
-        platform = ${{runner.os}} ~ 
-        generator = ${{matrix.generator.name}} ~ 
-        build type = ${{matrix.buildType}} ~ 
-        compiler = ${{matrix.compilerCpp.name}}  
+    - name: CMake run unit tests (gtest and gmock)
       run: > 
         cmake 
         --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
         -j8 
         --target runUnitTest
+
+    - name: CTest
+      run: > 
+        ctest 
+        --test-dir ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8
+        --output-on-failure
 
 
   multiConfig:
@@ -149,16 +137,9 @@ jobs:
     runs-on: ${{matrix.os}}
 
     steps:
-    - run: echo Platform = ${{matrix.os}}, compiler = ${{matrix.compilerCpp}}, build type = ${{matrix.buildType}}
-
     - name: Checkout repo
       uses: actions/checkout@v4
 
-    - name: Location of repo
-      run: |
-        pwd 
-        ls ${{github.workspace}}
-        
     - name: Setup Ninja
       # if: ${{matrix.generator.name == "Ninja Multi-Config"}}
       uses: seanmiddleditch/gha-setup-ninja@master
@@ -178,13 +159,16 @@ jobs:
         echo ninja --version
         ninja --version
 
-    - name: >
-        CMake configure ~ 
-        platform = ${{runner.os}} ~ 
-        generator = ${{matrix.generator.name}} ~ 
-        build type = ${{matrix.buildType}} ~ 
-        compiler = ${{matrix.compilerCpp.name}} ~
-        linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
+    - name: Parameter values
+      shell: bash
+      run: | 
+        echo platform = ${{runner.os}}
+        echo generator = ${{matrix.generator.name}}
+        echo build_type = ${{matrix.build_type}}
+        echo compiler = ${{matrix.compilerCpp.name}}
+        echo linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
+
+    - name: CMake configure
       run: > 
         cmake -S . 
         -B ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
@@ -192,24 +176,14 @@ jobs:
         -D CMAKE_CXX_COMPILER=${{matrix.compilerCpp.name}}
         -D linkGTestAsSharedLibrary=${{matrix.linkGTestAsSharedLibrary}}
       
-    - name: >
-        CMake build ~ 
-        platform = ${{runner.os}} ~ 
-        generator = ${{matrix.generator.name}} ~ 
-        build type = ${{matrix.buildType}} ~ 
-        compiler = ${{matrix.compilerCpp.name}}
+    - name: CMake build
       run: > 
         cmake 
         --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
         -j8 
         --config ${{matrix.buildType}}
 
-    - name: >
-        CMake run program ~ 
-        platform = ${{runner.os}} ~ 
-        generator = ${{matrix.generator.name}} ~ 
-        build type = ${{matrix.buildType}} ~ 
-        compiler = ${{matrix.compilerCpp.name}}  
+    - name: CMake run program
       run: > 
         cmake 
         --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
@@ -217,15 +191,18 @@ jobs:
         --config ${{matrix.buildType}}
         --target run
 
-    - name: >
-        CMake run unit tests ~ 
-        platform = ${{runner.os}} ~ 
-        generator = ${{matrix.generator.name}} ~ 
-        build type = ${{matrix.buildType}} ~ 
-        compiler = ${{matrix.compilerCpp.name}}  
+    - name: CMake run unit tests (gtest and gmock)
       run: > 
         cmake 
         --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
         -j8 
         --config ${{matrix.buildType}}
         --target runUnitTest
+
+    - name: CTest
+      run: > 
+        ctest 
+        --test-dir ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8
+        --config ${{matrix.buildType}}
+        --output-on-failure
