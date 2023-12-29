@@ -62,7 +62,7 @@ jobs:
     - name: CMake run unit tests (gtest and gmock) 
       run: cmake --build --preset ${{matrix.preset}} --target runUnitTest
 
-    - name: CTest
+    - name: CTest run unit tests (gtest and gmock)
       run: ctest --preset ${{matrix.preset}} --output-on-failure
 
 
@@ -76,7 +76,7 @@ jobs:
           - NinjaMC-Msvc
           - VSx32-Msvc
           - VSx64-Msvc
-        build_type: [Debug, Release]
+        buildType: [Debug, Release]
         
     runs-on: ${{matrix.os}}
 
@@ -108,19 +108,19 @@ jobs:
       run: | 
         echo platform = ${{runner.os}}
         echo preset = ${{matrix.preset}}
-        echo build_type = ${{matrix.build_type}}
+        echo buildType = ${{matrix.buildType}}
 
     - name: CMake configure
       run: cmake --preset ${{matrix.preset}}
       
     - name: CMake build
-      run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.build_type}}
+      run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.buildType}}
 
     - name: CMake run program
-      run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.build_type}} --target run
+      run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.buildType}} --target run
 
     - name: CMake run unit tests (gtest and gmock)
-      run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.build_type}} --target runUnitTest
+      run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.buildType}} --target runUnitTest
 
-    - name: CTest
-      run: ctest --preset ${{matrix.preset}} --config ${{matrix.build_type}} --output-on-failure
+    - name: CTest run unit tests (gtest and gmock)
+      run: ctest --preset ${{matrix.preset}} --config ${{matrix.buildType}} --output-on-failure

@@ -63,7 +63,7 @@ jobs:
       run: | 
         echo platform = ${{runner.os}}
         echo generator = ${{matrix.generator.name}}
-        echo build_type = ${{matrix.build_type}}
+        echo buildType = ${{matrix.buildType}}
         echo compiler = ${{matrix.compilerCpp.name}}
         echo linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
 
@@ -72,7 +72,7 @@ jobs:
         cmake -S . 
         -B ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
         -G "${{matrix.generator.name}}" 
-        -D CMAKE_BUILD_TYPE=${{matrix.buildType}} 
+        -D CMAKE_buildType=${{matrix.buildType}} 
         -D CMAKE_CXX_COMPILER=${{matrix.compilerCpp.name}}
         -D linkGTestAsSharedLibrary=${{matrix.linkGTestAsSharedLibrary}}
       
@@ -96,7 +96,7 @@ jobs:
         -j8 
         --target runUnitTest
 
-    - name: CTest
+    - name: CTest run unit tests (gtest and gmock)
       run: > 
         ctest 
         --test-dir ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
@@ -164,7 +164,7 @@ jobs:
       run: | 
         echo platform = ${{runner.os}}
         echo generator = ${{matrix.generator.name}}
-        echo build_type = ${{matrix.build_type}}
+        echo buildType = ${{matrix.buildType}}
         echo compiler = ${{matrix.compilerCpp.name}}
         echo linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
 
@@ -199,7 +199,7 @@ jobs:
         --config ${{matrix.buildType}}
         --target runUnitTest
 
-    - name: CTest
+    - name: CTest run unit tests (gtest and gmock)
       run: > 
         ctest 
         --test-dir ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
