@@ -1,0 +1,303 @@
+name: Build and run without CMakePresets.json
+
+on:
+  push: 
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  singleConfig:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        compilerCpp: 
+          - name: cl
+            buildSubDir: Msvc
+        buildType: [Debug, Release]
+        generator: 
+          - name: Ninja
+            buildDir: buildNinja
+          - name: "NMake Makefiles"
+            buildDir: buildMake
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - run: echo Platform = ${{matrix.os}}, compiler = ${{matrix.compilerCpp}}, build type = ${{matrix.buildType}}
+
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Location of repo
+      run: |
+        pwd 
+        ls ${{github.workspace}}
+        
+    - name: Setup Ninja
+      # if: ${{matrix.generator.name == Ninja}}
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Setup MSVC compiler
+      # uses: microsoft/setup-msbuild@v1.0.2
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Tool versions
+      shell: bash
+      run: | 
+        echo cl
+        cl
+        echo 
+        echo cmake --version
+        cmake --version
+        echo 
+        echo ninja --version
+        ninja --version
+
+    - name: >
+        CMake configure ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}} ~
+        buildSharedLibs = ${{matrix.buildSharedLibs}}
+      run: > 
+        cmake -S . 
+        -B ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -G "${{matrix.generator.name}}" 
+        -D CMAKE_BUILD_TYPE=${{matrix.buildType}} 
+        -D CMAKE_CXX_COMPILER=${{matrix.compilerCpp.name}}
+        -D BUILD_SHARED_LIBS=${{matrix.buildSharedLibs}}
+      
+    - name: >
+        CMake build ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8
+
+    - name: >
+        CMake run program ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}  
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --target run
+
+    - name: >
+        CMake run unit tests ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}  
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --target runUnitTest
+
+
+  multiConfig:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        compilerCpp: 
+          - name: cl
+            buildSubDir: Msvc
+        buildType: [Debug, Release]
+        generator: 
+          - name: "Ninja Multi-Config"
+            buildDir: buildNinjaMC
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - run: echo Platform = ${{matrix.os}}, compiler = ${{matrix.compilerCpp}}, build type = ${{matrix.buildType}}
+
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Location of repo
+      run: |
+        pwd 
+        ls ${{github.workspace}}
+        
+    - name: Setup Ninja
+      # if: ${{matrix.generator.name == "Ninja Multi-Config"}}
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Setup MSVC compiler
+      # uses: microsoft/setup-msbuild@v1.0.2
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Tool versions
+      shell: bash
+      run: | 
+        echo cl
+        cl
+        echo 
+        echo cmake --version
+        cmake --version
+        echo 
+        echo ninja --version
+        ninja --version
+
+    - name: >
+        CMake configure ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}} ~
+        buildSharedLibs = ${{matrix.buildSharedLibs}}
+      run: > 
+        cmake -S . 
+        -B ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -G "${{matrix.generator.name}}" 
+        -D CMAKE_CXX_COMPILER=${{matrix.compilerCpp.name}}
+        -D BUILD_SHARED_LIBS=${{matrix.buildSharedLibs}}
+      
+    - name: >
+        CMake build ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --config ${{matrix.buildType}}
+
+    - name: >
+        CMake run program ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}  
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --config ${{matrix.buildType}}
+        --target run
+
+    - name: >
+        CMake run unit tests ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}  
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --config ${{matrix.buildType}}
+        --target runUnitTest
+
+
+  multiArchitecture:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        compilerCpp: 
+          - name: cl
+            buildSubDir: Msvc
+        buildType: [Debug, Release]
+        generator: 
+          - name: Visual Studio 17 2022
+            buildDir: buildVS
+        architecture:
+          - name: win32
+            buildSubDir: x32
+          - name: x64
+            buildSubDir: x64
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - run: echo Platform = ${{matrix.os}}, compiler = ${{matrix.compilerCpp}}, build type = ${{matrix.buildType}} architecture = ${{matrix.architecture.name}}
+
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Location of repo
+      run: |
+        pwd 
+        ls ${{github.workspace}}
+
+    - name: Setup MSVC compiler
+      # uses: microsoft/setup-msbuild@v1.0.2
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Tool versions
+      shell: bash
+      run: | 
+        echo cl
+        cl
+        echo 
+        echo cmake --version
+        cmake --version
+
+    - name: >
+        CMake configure ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}} ~
+        architecture = ${{matrix.compilerCpp.architecture.name}} ~
+        buildSharedLibs = ${{matrix.buildSharedLibs}}
+      run: > 
+        cmake -S . 
+        -B ${{matrix.generator.buildDir}}/${{matrix.architecture.buildSubDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -G "${{matrix.generator.name}}" 
+        -A ${{matrix.architecture.name}}
+        -D BUILD_SHARED_LIBS=${{matrix.buildSharedLibs}}
+      
+    - name: >
+        CMake build ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.architecture.buildSubDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --config ${{matrix.buildType}}
+
+    - name: >
+        CMake run program ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}  
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.architecture.buildSubDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --config ${{matrix.buildType}}
+        --target run
+
+    - name: >
+        CMake run unit tests ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}  
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.architecture.buildSubDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --config ${{matrix.buildType}}
+        --target runUnitTest

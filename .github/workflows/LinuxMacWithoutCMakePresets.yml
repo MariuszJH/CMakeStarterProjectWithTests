@@ -1,0 +1,231 @@
+name: Build and run without CMakePresets.json
+
+on:
+  push: 
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  singleConfig:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        compilerCpp: 
+          - name: g++
+            buildSubDir: Gnu
+          - name: clang++
+            buildSubDir: Clang
+        buildType: [Debug, Release]
+        generator: 
+          - name: Ninja
+            buildDir: buildNinja
+          - name: "Unix Makefiles"
+            buildDir: buildMake
+
+        linkGTestAsSharedLibrary: 
+          # - ON # do not test this option because it works only on with a preinstalled gtest
+          - OFF
+
+        exclude:
+          - os: macos-latest
+            compilerCpp:
+              name: g++
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - run: echo Platform = ${{matrix.os}}, compiler = ${{matrix.compilerCpp}}, build type = ${{matrix.buildType}}
+
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Location of repo
+      run: |
+        pwd 
+        ls ${{github.workspace}}
+        
+    - name: Setup Ninja
+      # if: ${{matrix.generator.name == Ninja}}
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Tool versions
+      shell: bash
+      run: | 
+        echo g++ --version
+        g++ --version
+        echo 
+        echo clang++ --version
+        clang++ --version
+        echo 
+        echo cmake --version
+        cmake --version
+        echo 
+        echo ninja --version
+        ninja --version
+
+    - name: >
+        CMake configure ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}} ~
+        linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
+      run: > 
+        cmake -S . 
+        -B ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -G "${{matrix.generator.name}}" 
+        -D CMAKE_BUILD_TYPE=${{matrix.buildType}} 
+        -D CMAKE_CXX_COMPILER=${{matrix.compilerCpp.name}}
+        -D linkGTestAsSharedLibrary=${{matrix.linkGTestAsSharedLibrary}}
+      
+    - name: >
+        CMake build ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8
+
+    - name: >
+        CMake run program ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}  
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --target run
+
+    - name: >
+        CMake run unit tests ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}  
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --target runUnitTest
+
+
+  multiConfig:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        compilerCpp: 
+          - name: g++
+            buildSubDir: Gnu
+          - name: clang++
+            buildSubDir: Clang
+        buildType: [Debug, Release]
+        generator: 
+          - name: "Ninja Multi-Config"
+            buildDir: buildNinjaMC
+          - name: Xcode
+            buildDir: buildXcode
+
+        linkGTestAsSharedLibrary: 
+          # - ON # do not test this option because it works only on with a preinstalled gtest
+          - OFF
+
+        exclude:
+          - os: ubuntu-latest
+            generator: 
+              name: Xcode
+
+          - os: macos-latest
+            compilerCpp:
+              name: g++
+
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - run: echo Platform = ${{matrix.os}}, compiler = ${{matrix.compilerCpp}}, build type = ${{matrix.buildType}}
+
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Location of repo
+      run: |
+        pwd 
+        ls ${{github.workspace}}
+        
+    - name: Setup Ninja
+      # if: ${{matrix.generator.name == "Ninja Multi-Config"}}
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Tool versions
+      shell: bash
+      run: | 
+        echo g++ --version
+        g++ --version
+        echo 
+        echo clang++ --version
+        clang++ --version
+        echo 
+        echo cmake --version
+        cmake --version
+        echo 
+        echo ninja --version
+        ninja --version
+
+    - name: >
+        CMake configure ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}} ~
+        linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
+      run: > 
+        cmake -S . 
+        -B ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -G "${{matrix.generator.name}}" 
+        -D CMAKE_CXX_COMPILER=${{matrix.compilerCpp.name}}
+        -D linkGTestAsSharedLibrary=${{matrix.linkGTestAsSharedLibrary}}
+      
+    - name: >
+        CMake build ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --config ${{matrix.buildType}}
+
+    - name: >
+        CMake run program ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}  
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --config ${{matrix.buildType}}
+        --target run
+
+    - name: >
+        CMake run unit tests ~ 
+        platform = ${{runner.os}} ~ 
+        generator = ${{matrix.generator.name}} ~ 
+        build type = ${{matrix.buildType}} ~ 
+        compiler = ${{matrix.compilerCpp.name}}  
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8 
+        --config ${{matrix.buildType}}
+        --target runUnitTest

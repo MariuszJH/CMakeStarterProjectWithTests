@@ -1,0 +1,181 @@
+name: Build and run with CMakePresets.json
+
+on:
+  push: 
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  singleConfig:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        preset:
+        # single config generators
+          - Ninja-Gnu-Debug
+          - Ninja-Gnu-Release
+          - Ninja-Clang-Debug
+          - Ninja-Clang-Release
+          - Make-Gnu-Debug
+          - Make-Gnu-Release
+          - Make-Clang-Debug
+          - Make-Clang-Release
+
+        linkGTestAsSharedLibrary: 
+          # - ON # do not test this option because it works only on with a preinstalled gtest
+          - OFF
+
+        exclude:
+          - os: macos-latest
+            preset: Ninja-Gnu-Debug
+          - os: macos-latest
+            preset: Ninja-Gnu-Release
+          - os: macos-latest
+            preset: Make-Gnu-Debug
+          - os: macos-latest
+            preset: Make-Gnu-Release
+        
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - run: echo Platform = ${{matrix.os}}, preset = ${{matrix.preset}}
+
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Location of repo
+      run: |
+        pwd 
+        ls ${{github.workspace}}
+        
+    - name: Setup Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Tool versions
+      shell: bash
+      run: | 
+        echo g++ --version
+        g++ --version
+        echo 
+        echo clang++ --version
+        clang++ --version
+        echo 
+        echo cmake --version
+        cmake --version
+        echo 
+        echo ninja --version
+        ninja --version
+
+    - name: >
+        CMake configure ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}} ~
+        linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
+      run: > 
+        cmake --preset ${{matrix.preset}}
+        -D linkGTestAsSharedLibrary=${{matrix.linkGTestAsSharedLibrary}}
+      
+    - name: >
+        CMake build ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}}
+      run: cmake --build --preset ${{matrix.preset}}
+
+    - name: >
+        CMake run program ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}}
+      run: cmake --build --preset ${{matrix.preset}} --target run
+
+    - name: >
+        CMake run unit tests ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}}
+      run: cmake --build --preset ${{matrix.preset}} --target runUnitTests
+
+
+  multiConfig:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        preset:
+        # multi config generators
+          - NinjaMC-Gnu
+          - NinjaMC-Clang
+          - Xcode-Clang
+        build_type: [Debug, Release]
+
+        linkGTestAsSharedLibrary: 
+          # - ON # do not test this option because it works only on with a preinstalled gtest
+          - OFF
+
+        exclude:
+          - os: ubuntu-latest
+            preset: Xcode-Clang
+            
+          - os: macos-latest
+            preset: NinjaMC-Gnu
+        
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - run: echo Platform = ${{matrix.os}}, preset = ${{matrix.preset}}
+
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Location of repo
+      run: |
+        pwd 
+        ls ${{github.workspace}}
+        
+    - name: Setup Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Tool versions
+      shell: bash
+      run: | 
+        echo g++ --version
+        g++ --version
+        echo 
+        echo clang++ --version
+        clang++ --version
+        echo 
+        echo cmake --version
+        cmake --version
+        echo 
+        echo ninja --version
+        ninja --version
+
+    - name: >
+        CMake configure ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}} ~
+        linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
+      run: > 
+        cmake --preset ${{matrix.preset}}
+        -D linkGTestAsSharedLibrary=${{matrix.linkGTestAsSharedLibrary}}
+      
+    - name: >
+        CMake build ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}} ~
+        build_type = ${{matrix.build_type}}
+      run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.build_type}}
+
+    - name: >
+        CMake run program ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}} ~
+        build_type = ${{matrix.build_type}}
+      run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.build_type}} --target run
+
+    - name: >
+        CMake run unit tests ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}} ~
+        build_type = ${{matrix.build_type}}
+      run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.build_type}} --target runUnitTest

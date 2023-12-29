@@ -1,0 +1,148 @@
+name: Build and run with CMakePresets.json
+
+on:
+  push: 
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  singleConfig:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        preset:
+        # single config generators
+          - Ninja-Msvc-Debug
+          - Ninja-Msvc-Release
+          - NMake-Msvc-Debug
+          - NMake-Msvc-Release
+        
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - run: echo Platform = ${{matrix.os}}, preset = ${{matrix.preset}}
+
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Location of repo
+      run: |
+        pwd 
+        ls ${{github.workspace}}
+        
+    - name: Setup Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Setup MSVC compiler
+      # uses: microsoft/setup-msbuild@v1.0.2
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Tool versions
+      shell: bash
+      run: | 
+        echo cl
+        cl
+        echo 
+        echo cmake --version
+        cmake --version
+        echo 
+        echo ninja --version
+        ninja --version
+
+    - name: >
+        CMake configure ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}}
+      run: cmake --preset ${{matrix.preset}}
+      
+    - name: >
+        CMake build ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}}
+      run: cmake --build --preset ${{matrix.preset}}
+
+    - name: >
+        CMake run program ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}}
+      run: cmake --build --preset ${{matrix.preset}} --target run
+
+    - name: >
+        CMake run unit test ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}}
+      run: cmake --build --preset ${{matrix.preset}} --target runUnitTest
+
+
+  multiConfig:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        preset:
+        # multi config generators
+          - NinjaMC-Msvc
+          - VSx32-Msvc
+          - VSx64-Msvc
+        build_type: [Debug, Release]
+        
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - run: echo Platform = ${{matrix.os}}, preset = ${{matrix.preset}}
+
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Location of repo
+      run: |
+        pwd 
+        ls ${{github.workspace}}
+        
+    - name: Setup Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Setup MSVC compiler
+      # uses: microsoft/setup-msbuild@v1.0.2
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Tool versions
+      shell: bash
+      run: | 
+        echo cl
+        cl
+        echo 
+        echo cmake --version
+        cmake --version
+        echo 
+        echo ninja --version
+        ninja --version
+
+    - name: >
+        CMake configure ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}}
+      run: cmake --preset ${{matrix.preset}}
+      
+    - name: >
+        CMake build ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}} ~
+        build_type = ${{matrix.build_type}}
+      run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.build_type}}
+
+    - name: >
+        CMake run program ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}} ~
+        build_type = ${{matrix.build_type}}
+      run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.build_type}} --target run
+
+    - name: >
+        CMake run unit tests ~ 
+        platform = ${{runner.os}} ~ 
+        preset = ${{matrix.preset}} ~
+        build_type = ${{matrix.build_type}}
+      run: cmake --build --preset ${{matrix.preset}} --config ${{matrix.build_type}} --target runUnitTest

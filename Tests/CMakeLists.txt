@@ -67,7 +67,9 @@ Find or fetch a library and display its cmake targets
 #]==================================================]
 option(linkGTestAsSharedLibrary "OFF to link as static library, ON as dynamic - on Windows the latter requires the *.dll to be copied next to the .exe (this is done in add_subdirectory)" OFF)
 
-if(linkGTestAsSharedLibrary)
+if(WIN32)
+    message(STATUS "googletest will be downloaded, built, and linked as STATIC library")
+elseif(linkGTestAsSharedLibrary)
     set(isThereDllToLink ON)
     message(STATUS "linkGTestAsSharedLibrary: " ${linkGTestAsSharedLibrary} " --- googletest will be linked as SHARED library")
 else()
