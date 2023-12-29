@@ -39,8 +39,7 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v4
         
-    - name: Setup Ninja
-      # if: ${{matrix.generator.name == Ninja}}
+    - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
 
     - name: Tool versions
@@ -140,8 +139,7 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v4
 
-    - name: Setup Ninja
-      # if: ${{matrix.generator.name == "Ninja Multi-Config"}}
+    - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
 
     - name: Tool versions
