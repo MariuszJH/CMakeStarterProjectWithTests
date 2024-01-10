@@ -57,10 +57,13 @@ jobs:
       uses: actions/cache@v3
       with:
         path: |
-          /usr/lib/x86_64-linux-gnu/libsfml*
-          /usr/share/doc/libsfml*
-          /usr/share/doc/libsfml*
+          /usr/lib/x86_64-linux-gnu
+          /usr/share/doc
+          /usr/share/doc
           /usr/include/SFML
+        # /usr/lib/x86_64-linux-gnu/libsfml*
+        # /usr/share/doc/libsfml*
+        # /usr/share/doc/libsfml*
         key: sfml-ubuntu-preset
         
     - name: Install SFML if it hasn't been cached yet (Linux)
