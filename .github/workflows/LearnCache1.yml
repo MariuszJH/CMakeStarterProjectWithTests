@@ -76,8 +76,8 @@ jobs:
     - name: Location of SFML
       run: |
         ls /usr/include/SFML
-        find /usr -iname libsfml*
-        find /usr -iname SFML?Config.cmake
+      # find /usr -iname libsfml*
+      # find /usr -iname SFML?Config.cmake
 
     # - name: Location of installed SDL2 (Linux)
     #   run: |
