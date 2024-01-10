@@ -1,0 +1,171 @@
+name: Learn Github actions cache
+
+on:
+  push: 
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+env:
+  projectName: CMakeStarterProjectWithTests
+
+jobs:
+
+  build-on-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: CMake configure
+      run: cmake --preset Make-Gnu-Release
+      
+    - name: CMake build
+      run: cmake --build --preset Make-Gnu-Release
+
+    - name: CMake run program
+      run: cmake --build --preset Make-Gnu-Release --target run
+
+    - name: CMake run unit tests (gtest and gmock)
+      run: cmake --build --preset Make-Gnu-Release --target runUnitTest
+
+    - name: CTest run unit tests (gtest and gmock)
+      run: ctest --preset Make-Gnu-Release --output-on-failure
+
+    - name: Location of GTest
+      run: ls External
+
+    # - name: Cache SDL2 (Linux)
+    #   id: cache-ubuntu-sdl2
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: |
+    #       /opt/SDL2
+    #     # sudo /usr/include/SDL2
+    #     # /usr/lib/x86_64-linux-gnu/libSDL*
+    #     key: SDL2-ubuntu-preset
+        
+    # - name: Install SDL2 if it hasn't been cached yet (Linux)
+    #   if: steps.cache-ubuntu-sdl2.outputs.cache-hit != 'true'
+    #   run: |
+    #       echo sudo apt-get install libsdl2-dev
+    #       sudo apt-get install libsdl2-dev
+
+    # - name: Location of installed SDL2 (Linux)
+    #   run: |
+    #       find /usr -iname SDL.h
+    #       find /usr -iname libSDL2.a
+    #       find /usr -iname libSDL2.so
+    #       find /usr -iname SDL2?Config.cmake
+    #       ls /usr/include/SDL2
+    #       ls /usr/lib/x86_64-linux-gnu
+
+
+  build-on-macos:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: CMake configure
+      run: cmake --preset Make-Clang-Release
+      
+    - name: CMake build
+      run: cmake --build --preset Make-Clang-Release
+
+    - name: CMake run program
+      run: cmake --build --preset Make-Clang-Release --target run
+
+    - name: CMake run unit tests (gtest and gmock)
+      run: cmake --build --preset Make-Clang-Release --target runUnitTest
+
+    - name: CTest run unit tests (gtest and gmock)
+      run: ctest --preset Make-Clang-Release --output-on-failure
+
+    - name: Location of GTest
+      run: ls External
+
+    # - name: Cache SDL2 (Mac)
+    #   id: cache-macos-sdl2
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: |
+    #       /usr/local/Cellar/sdl2
+    #     key: SDL2-macos-preset
+
+    # - name: Install SDL2 if it hasn't been cached yet (Mac)
+    #   if: steps.cache-macos-sdl2.outputs.cache-hit != 'true'
+    #   run: |
+    #       echo brew install sdl2
+    #       brew install sdl2
+
+    # - name: Location of installed SDL2 (Mac)
+    #   run: |
+    #       find /usr/local/Cellar/sdl2 -iname SDL.h
+    #       find /usr/local/Cellar/sdl2 -iname libSDL2.a
+    #       find /usr/local/Cellar/sdl2 -iname libSDL2.so
+    #       find /usr/local/Cellar/sdl2 -iname SDL2?Config.cmake
+    #       ls /usr/local/Cellar/sdl2/2.28.5/include/SDL2
+    #       ls /usr/local/Cellar/sdl2/2.28.5/lib
+
+
+  build-on-windows:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: CMake configure
+      run: cmake --preset NMake-Msvc-Release
+      
+    - name: CMake build
+      run: cmake --build --preset NMake-Msvc-Release
+
+    - name: CMake run program
+      run: cmake --build --preset NMake-Msvc-Release --target run
+
+    - name: CMake run unit tests (gtest and gmock)
+      run: cmake --build --preset NMake-Msvc-Release --target runUnitTest
+
+    - name: CTest run unit tests (gtest and gmock)
+      run: ctest --preset NMake-Msvc-Release --output-on-failure
+
+    - name: Location of GTest
+      run: ls External
+
+    # - name: Cache SDL2 (Windows)
+    #   id: cache-windows-sdl2
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: |
+    #       C:/SDL2
+    #     key: SDL2-windows-preset
+
+    # - name: Install SDL2 if it hasn't been cached yet (Windows)
+    #   if: steps.cache-windows-sdl2.outputs.cache-hit != 'true'
+    #   shell: bash
+    #   run: |
+    #     curl "https://github.com/libsdl-org/SDL/releases/download/release-$env:SDL_VERSION/SDL2-devel-$env:SDL_VERSION-VC.zip" -o C:/SDL.zip
+    #     unzip C:/SDL.zip -d C:/SDL2
+    #   # wget "https://github.com/libsdl-org/SDL/releases/download/release-$env:SDL_VERSION/SDL2-devel-$env:SDL_VERSION-VC.zip" -P C:\SDL.zip
+    #   # shell: powershell
+    #   # run: |
+    #     # Invoke-WebRequest "https://github.com/libsdl-org/SDL/releases/download/release-$env:SDL_VERSION/SDL2-devel-$env:SDL_VERSION-VC.zip" -o C:\SDL.zip
+    #     # Expand-Archive C:\SDL.zip -DestinationPath C:\SDL2
+
+    # - name: Location of installed SDL2 (Windows)
+    #   shell: powershell
+    #   run: |
+    #     ls C:\SDL2 -Include SDL.h -Recurse -Name
+    #     ls C:\SDL2 -Include SDL2.lib -Recurse -Name
+    #     ls C:\SDL2 -Include SDL2.dll -Recurse -Name
+    #     ls C:\SDL2 -Include SDL2?Config.cmake -Recurse -Name

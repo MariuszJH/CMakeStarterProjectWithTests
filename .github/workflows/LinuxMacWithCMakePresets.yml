@@ -141,7 +141,7 @@ jobs:
         echo buildType = ${{matrix.buildType}}
         echo linkGTestAsSharedLibrary = ${{matrix.linkGTestAsSharedLibrary}}
 
-    - name: CMake configure[]
+    - name: CMake configure
       run: > 
         cmake --preset ${{matrix.preset}}
         -D linkGTestAsSharedLibrary=${{matrix.linkGTestAsSharedLibrary}}
