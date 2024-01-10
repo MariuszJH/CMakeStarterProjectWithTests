@@ -36,7 +36,7 @@ jobs:
       run: ctest --preset Make-Gnu-Release --output-on-failure
 
     - name: Location of GTest
-      run: ls External
+      run: ls External/googletest
 
     # - name: Cache SDL2 (Linux)
     #   id: cache-ubuntu-sdl2
@@ -89,7 +89,7 @@ jobs:
       run: ctest --preset Make-Clang-Release --output-on-failure
 
     - name: Location of GTest
-      run: ls External
+      run: ls External/googletest
 
     # - name: Cache SDL2 (Mac)
     #   id: cache-macos-sdl2
@@ -121,6 +121,9 @@ jobs:
     - name: Checkout repo
       uses: actions/checkout@v4
 
+    - name: Setup MSVC compiler
+      uses: ilammy/msvc-dev-cmd@v1
+
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
 
@@ -140,7 +143,7 @@ jobs:
       run: ctest --preset NMake-Msvc-Release --output-on-failure
 
     - name: Location of GTest
-      run: ls External
+      run: ls External/googletest
 
     # - name: Cache SDL2 (Windows)
     #   id: cache-windows-sdl2
