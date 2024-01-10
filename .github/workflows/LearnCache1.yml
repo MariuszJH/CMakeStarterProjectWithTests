@@ -100,8 +100,8 @@ jobs:
     - name: Install GTest if it hasn't been cached yet (Mac)
       if: steps.cache-macos-sdl2.outputs.cache-hit != 'true'
       run: |
-          echo brew install gtest
-          brew install gtest
+          echo brew install googletest
+          brew install googletest
 
     # - name: Location of installed SDL2 (Mac)
     #   run: |
