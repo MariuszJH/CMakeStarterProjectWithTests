@@ -67,7 +67,9 @@ jobs:
           sudo apt-get install libsfml-dev
 
     - name: Location of SFML
-      run: ls /usr
+      run: |
+        ls /usr/include/SFML
+        find /usr -iname libsfml*
 
     # - name: Location of installed SDL2 (Linux)
     #   run: |
