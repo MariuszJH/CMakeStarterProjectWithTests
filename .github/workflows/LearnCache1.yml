@@ -38,21 +38,19 @@ jobs:
     - name: Location of GTest
       run: ls External/googletest
 
-    # - name: Cache SDL2 (Linux)
-    #   id: cache-ubuntu-sdl2
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: |
-    #       /opt/SDL2
-    #     # sudo /usr/include/SDL2
-    #     # /usr/lib/x86_64-linux-gnu/libSDL*
-    #     key: SDL2-ubuntu-preset
+    - name: Cache GTest (Linux)
+      id: cache-ubuntu-sdl2
+      uses: actions/cache@v3
+      with:
+        path: |
+          External/googletest
+        key: SDL2-ubuntu-preset
         
-    # - name: Install SDL2 if it hasn't been cached yet (Linux)
-    #   if: steps.cache-ubuntu-sdl2.outputs.cache-hit != 'true'
-    #   run: |
-    #       echo sudo apt-get install libsdl2-dev
-    #       sudo apt-get install libsdl2-dev
+    - name: Install GTest if it hasn't been cached yet (Linux)
+      if: steps.cache-ubuntu-sdl2.outputs.cache-hit != 'true'
+      run: |
+          echo sudo apt-get install libsdl2-dev
+          sudo apt-get install libsdl2-dev
 
     # - name: Location of installed SDL2 (Linux)
     #   run: |
@@ -91,19 +89,19 @@ jobs:
     - name: Location of GTest
       run: ls External/googletest
 
-    # - name: Cache SDL2 (Mac)
-    #   id: cache-macos-sdl2
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: |
-    #       /usr/local/Cellar/sdl2
-    #     key: SDL2-macos-preset
+    - name: Cache GTest (Mac)
+      id: cache-macos-sdl2
+      uses: actions/cache@v3
+      with:
+        path: |
+          External/googletest
+        key: SDL2-macos-preset
 
-    # - name: Install SDL2 if it hasn't been cached yet (Mac)
-    #   if: steps.cache-macos-sdl2.outputs.cache-hit != 'true'
-    #   run: |
-    #       echo brew install sdl2
-    #       brew install sdl2
+    - name: Install GTest if it hasn't been cached yet (Mac)
+      if: steps.cache-macos-sdl2.outputs.cache-hit != 'true'
+      run: |
+          echo brew install gtest
+          brew install gtest
 
     # - name: Location of installed SDL2 (Mac)
     #   run: |
@@ -145,15 +143,15 @@ jobs:
     - name: Location of GTest
       run: ls External/googletest
 
-    # - name: Cache SDL2 (Windows)
-    #   id: cache-windows-sdl2
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: |
-    #       C:/SDL2
-    #     key: SDL2-windows-preset
+    - name: Cache GTest (Windows)
+      id: cache-windows-sdl2
+      uses: actions/cache@v3
+      with:
+        path: |
+          External/googletest
+        key: SDL2-windows-preset
 
-    # - name: Install SDL2 if it hasn't been cached yet (Windows)
+    # - name: Install GTest if it hasn't been cached yet (Windows)
     #   if: steps.cache-windows-sdl2.outputs.cache-hit != 'true'
     #   shell: bash
     #   run: |
