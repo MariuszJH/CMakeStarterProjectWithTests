@@ -57,10 +57,11 @@ jobs:
       uses: actions/cache@v3
       with:
         path: |
-          /usr/lib/x86_64-linux-gnu
-          /usr/share/doc
-          /usr/share/doc
-          /usr/include/SFML
+          /usr/include/SFML/Audio.hpp
+        # /usr/lib/x86_64-linux-gnu
+        # /usr/share/doc
+        # /usr/share/doc
+        # /usr/include/SFML
         # /usr/lib/x86_64-linux-gnu/libsfml*
         # /usr/share/doc/libsfml*
         # /usr/share/doc/libsfml*
