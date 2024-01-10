@@ -52,16 +52,19 @@ jobs:
           echo sudo apt-get install libsdl2-dev
           sudo apt-get install libsdl2-dev
 
-    # - name: Cache SFML (Linux)
-    #   id: cache-ubuntu-sfml
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: |
-    #       External/googletest
-    #     key: sfml-ubuntu-preset
+    - name: Cache SFML (Linux)
+      id: cache-ubuntu-sfml
+      uses: actions/cache@v3
+      with:
+        path: |
+          /usr/lib/x86_64-linux-gnu/libsfml*
+          /usr/share/doc/libsfml*
+          /usr/share/doc/libsfml*
+          /usr/include/SFML
+        key: sfml-ubuntu-preset
         
     - name: Install SFML if it hasn't been cached yet (Linux)
-      # if: steps.cache-ubuntu-sfml.outputs.cache-hit != 'true'
+      if: steps.cache-ubuntu-sfml.outputs.cache-hit != 'true'
       run: |
           echo sudo apt-get install libsfml-dev
           sudo apt-get install libsfml-dev
@@ -70,6 +73,7 @@ jobs:
       run: |
         ls /usr/include/SFML
         find /usr -iname libsfml*
+        find /usr -iname SFML?Config.cmake
 
     # - name: Location of installed SDL2 (Linux)
     #   run: |
