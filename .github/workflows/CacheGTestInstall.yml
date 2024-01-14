@@ -24,6 +24,8 @@ jobs:
       run: |
         echo sudo apt-get install libgtest-dev
         sudo apt-get install libgtest-dev
+        echo sudo apt-get install libgmock-dev
+        sudo apt-get install libgmock-dev
 
         echo Find in /usr
         find /usr/ -iname gtest.h
@@ -37,6 +39,16 @@ jobs:
       run: |
         echo cmake --build --preset Ninja-Gnu-Debug
         cmake --build  --preset Ninja-Gnu-Debug
+
+    - name: CMake run --- Ninja, Gnu, Debug
+      run: |
+        echo cmake --build --preset Ninja-Gnu-Debug
+        cmake --build --preset Ninja-Gnu-Debug --target run
+
+    - name: CMake unit test --- Ninja, Gnu, Debug
+      run: |
+        echo cmake --build --preset Ninja-Gnu-Debug
+        cmake --build --preset Ninja-Gnu-Debug --target runUnitTest
 
 
   build-on-macos:
@@ -80,6 +92,16 @@ jobs:
         echo cmake --build --preset Ninja-Clang-Debug
         cmake --build --preset Ninja-Clang-Debug
 
+    - name: CMake run --- Ninja, Clang, Debug
+      run: |
+        echo cmake --build --preset Ninja-Clang-Debug
+        cmake --build --preset Ninja-Clang-Debug --target run
+
+    - name: CMake unit test --- Ninja, Clang, Debug
+      run: |
+        echo cmake --build --preset Ninja-Clang-Debug
+        cmake --build --preset Ninja-Clang-Debug --target runUnitTest
+
 
   build-on-windows:
     runs-on: windows-latest
@@ -103,3 +125,12 @@ jobs:
         echo cmake --build --preset Ninja-Msvc-Debug
         cmake --build --preset Ninja-Msvc-Debug
 
+    - name: CMake run --- Ninja, Msvc, Debug
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Debug
+        cmake --build --preset Ninja-Msvc-Debug --target run
+
+    - name: CMake unit test --- Ninja, Msvc, Debug
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Debug
+        cmake --build --preset Ninja-Msvc-Debug --target runUnitTest
