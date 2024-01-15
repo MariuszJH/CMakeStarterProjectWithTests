@@ -8,7 +8,7 @@ on:
 
 env:
   projectName: CMakeStarterProjectWithTests
-  GTest_VERSION: 1.13.0
+  # GTest_VERSION: 1.13.0
 
 jobs:
   build-on-linux:
@@ -28,12 +28,17 @@ jobs:
         sudo apt-get install libgmock-dev
 
         echo Find in /usr
-        find /usr/ -iname gtest.h
+        find /usr/ -iname gtest*.h
+        find /usr/ -iname libgtest*.a
+        find /usr/ -iname libgtest*.so
+        find /usr/ -iname gmock*.h
+        find /usr/ -iname libgmock*.a
+        find /usr/ -iname libgmock*.so
         
     - name: CMake configure --- Ninja, Gnu, Debug
       run: |
-        echo cmake --preset Ninja-Gnu-Debug
-        cmake --preset Ninja-Gnu-Debug
+        echo cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/src/googletest
+        cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/src/googletest
 
     - name: CMake build --- Ninja, Gnu, Debug
       run: |
@@ -71,7 +76,8 @@ jobs:
       if: steps.mac-GTest-ID-installed-cache1.outputs.cache-hit == 'true'
       run: |
         echo YES cached!
-        find /usr/local/Cellar/ -iname gtest.h
+        find /usr/local/Cellar/ -iname gtest*.h
+        find /usr/local/Cellar/ -iname gmock*.h
 
     - name: Is GTest not yet cached? Install GTest and cache it!
       if: steps.mac-GTest-ID-installed-cache1.outputs.cache-hit != 'true'
@@ -81,11 +87,18 @@ jobs:
 
         echo NO not yet cached!
         find /usr/local/Cellar -iname gtest.h
+        find /usr/local/Cellar -iname libgtest*.a
+        find /usr/local/Cellar -iname libgtest*.so
+        find /usr/local/Cellar -iname libgtest*.dylib
+        find /usr/local/Cellar -iname gmock*.h
+        find /usr/local/Cellar -iname libgmock*.a
+        find /usr/local/Cellar -iname libgmock*.dylib
+        find /usr/local/Cellar -iname libgmock*.so
 
     - name: CMake configure --- Ninja, Clang, Debug
       run: |
-        echo cmake --preset Ninja-Clang-Debug
-        cmake --preset Ninja-Clang-Debug
+        echo cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/Cellar/googletest
+        cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/Cellar/googletest
 
     - name: CMake build --- Ninja, Clang, Debug
       run: |
@@ -117,8 +130,8 @@ jobs:
 
     - name: CMake configure --- Ninja, Msvc, Debug
       run: |
-        echo cmake --preset Ninja-Msvc-Debug
-        cmake --preset Ninja-Msvc-Debug
+        echo cmake --preset Ninja-Msvc-Debug -D GTest_DIR=
+        cmake --preset Ninja-Msvc-Debug -D GTest_DIR=
 
     - name: CMake build --- Ninja, Msvc, Debug
       run: |

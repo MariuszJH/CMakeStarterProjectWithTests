@@ -8,7 +8,7 @@ on:
 
 env:
   projectName: CMakeStarterProjectWithTests
-  GTest_VERSION: 1.13.0
+  # GTest_VERSION: 1.13.0
 
 jobs:
   build-on-linux:
