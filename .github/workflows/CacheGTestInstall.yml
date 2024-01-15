@@ -35,7 +35,8 @@ jobs:
           /usr/lib/x86_64-linux-gnu/cmake/
         key: linux-GTest-KEY-installed-cache1
 
-    - name: Is GTest cached? Do not install GTest!
+    # - name: Is GTest cached? Do not install GTest!
+    - name: Restore GTest from cache; do not reinstall it!
       if: steps.linux-GTest-ID-installed-cache1.outputs.cache-hit == 'true'
       run: |
         echo YES cached!
@@ -51,7 +52,8 @@ jobs:
         find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname gtest*config.cmake
         find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname gmock*config.cmake
 
-    - name: Is GTest not yet cached? Install GTest and cache it!
+    # - name: Is GTest not yet cached? Install GTest and cache it!
+    - name: Install GTest since it is not yet cached
       if: steps.linux-GTest-ID-installed-cache1.outputs.cache-hit != 'true'
     # - name: Install GTest but do NOT cache it (caching of GTest doesn't work on Ubuntu)
       run: |
@@ -115,7 +117,7 @@ jobs:
         path: /usr/local/Cellar/googletest
         key: mac-GTest-KEY-installed-cache4
 
-    - name: Is GTest cached? Do not install GTest!
+    - name: Restore GTest from cache; do not reinstall it!
       if: steps.mac-GTest-ID-installed-cache4.outputs.cache-hit == 'true'
       run: |
         echo YES cached!
@@ -132,7 +134,7 @@ jobs:
         find /usr/local/Cellar/googletest -iname GTestConfig.cmake
         find /usr/local/Cellar/googletest -iname gmock?config.cmake
 
-    - name: Is GTest not yet cached? Install GTest and cache it!
+    - name: Install GTest since it is not yet cached
       if: steps.mac-GTest-ID-installed-cache4.outputs.cache-hit != 'true'
       run: |
         echo brew install googletest
@@ -175,8 +177,10 @@ jobs:
 
     - name: CMake configure --- Ninja, Clang, Debug
       run: |
-        echo cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/Cellar/googletest
-        cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/Cellar/googletest
+        echo cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
+        cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
+      # echo cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/Cellar/googletest
+      # cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/Cellar/googletest
       # echo cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/lib/cmake/GTest
       # cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/lib/cmake/GTest
 
@@ -207,6 +211,25 @@ jobs:
 
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Cache GTest
+      id: windows-GTest-ID-installed-cache1
+      uses: actions/cache@v3
+      with:
+        path: External/googletest
+        key: windows-GTest-KEY-installed-cache1
+
+    - name: Restore GTest from cache; do not reinstall it!
+      if: steps.windows-GTest-ID-installed-cache1.outputs.cache-hit == 'true'
+      run: |
+        echo YES cached!
+        ls External/googletest
+
+    - name: Install GTest since it is not yet cached
+      if: steps.windows-GTest-ID-installed-cache1.outputs.cache-hit != 'true'
+      run: |
+        echo NO not yet cached!
+        ls External/googletest
 
     - name: CMake configure --- Ninja, Msvc, Debug
       run: |
