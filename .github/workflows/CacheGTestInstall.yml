@@ -29,6 +29,7 @@ jobs:
       with:
         path: |
           /usr/include/gtest/
+          /usr/include/gmock/
           /usr/lib/x86_64-linux-gnu/*gtest*
           /usr/lib/x86_64-linux-gnu/*gmock*
           /usr/lib/x86_64-linux-gnu/cmake/
