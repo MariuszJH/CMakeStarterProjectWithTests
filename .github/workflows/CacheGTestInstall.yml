@@ -38,8 +38,17 @@ jobs:
       if: steps.linux-GTest-ID-installed-cache1.outputs.cache-hit == 'true'
       run: |
         echo YES cached!
-        find /usr/local/Cellar/ -iname gtest*.h
-        find /usr/local/Cellar/ -iname gmock*.h
+        echo find /usr/include/gtest -iname gtest*.h
+        find /usr/include -iname gtest*.h
+        echo find /usr/lib/x86_64-linux-gnu -iname libgtest*.a
+        find /usr/lib/x86_64-linux-gnu -iname libgtest*.a
+        find /usr/lib/x86_64-linux-gnu -iname libgtest*.so
+        find /usr/lib/x86_64-linux-gnu -iname gmock*.h
+        find /usr/lib/x86_64-linux-gnu -iname libgmock*.a
+        find /usr/lib/x86_64-linux-gnu -iname libgmock*.so
+        echo find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname gtest*config.cmake
+        find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname gtest*config.cmake
+        find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname gmock*config.cmake
 
     - name: Is GTest not yet cached? Install GTest and cache it!
       if: steps.linux-GTest-ID-installed-cache1.outputs.cache-hit != 'true'
@@ -51,7 +60,7 @@ jobs:
         sudo apt-get install libgmock-dev
 
         echo NO not yet cached!
-        echo find /usr/include -iname gtest*.h
+        echo find /usr/include/gtest -iname gtest*.h
         find /usr/include -iname gtest*.h
         echo find /usr/lib/x86_64-linux-gnu -iname libgtest*.a
         find /usr/lib/x86_64-linux-gnu -iname libgtest*.a
@@ -65,6 +74,8 @@ jobs:
 
         echo ls /usr/lib/x86_64-linux-gnu/cmake/GTest
         ls /usr/lib/x86_64-linux-gnu/cmake/GTest
+      # echo ls /usr/include/gtest
+      # ls /usr/include/gtest
         
     - name: CMake configure --- Ninja, Gnu, Debug
       run: |
