@@ -20,15 +20,13 @@ jobs:
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
 
-    # - name: Install GTest but do NOT cache it (caching of GTest doesn't work on Ubuntu)
-    #   run: |
-    #     echo sudo apt-get install libgtest-dev
-    #     sudo apt-get install libgtest-dev
-    #     echo sudo apt-get install libgmock-dev
-    #     sudo apt-get install libgmock-dev
-
-    - name: Is GTest preinstalled?
+    - name: Install GTest but do NOT cache it (caching of GTest doesn't work on Ubuntu)
       run: |
+        echo sudo apt-get install libgtest-dev
+        sudo apt-get install libgtest-dev
+        echo sudo apt-get install libgmock-dev
+        sudo apt-get install libgmock-dev
+
         echo Find in /usr
         find /usr/ -iname gtest*.h
         find /usr/ -iname libgtest*.a
@@ -36,13 +34,15 @@ jobs:
         find /usr/ -iname gmock*.h
         find /usr/ -iname libgmock*.a
         find /usr/ -iname libgmock*.so
-        find /usr/ -iname gtest?config.cmake
-        find /usr/ -iname gmock?config.cmake
+        find /usr/ -iname gtest*config.cmake
+        find /usr/ -iname gmock*config.cmake
         
     - name: CMake configure --- Ninja, Gnu, Debug
       run: |
-        echo cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/src/googletest
-        cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/src/googletest
+        echo cmake --preset Ninja-Gnu-Debug
+        cmake --preset Ninja-Gnu-Debug
+      # echo cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/src/googletest
+      # cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/src/googletest
 
     - name: CMake build --- Ninja, Gnu, Debug
       run: |
@@ -90,16 +90,16 @@ jobs:
         brew install googletest
 
         echo NO not yet cached!
-        find /usr -iname gtest.h
-        find /usr -iname libgtest*.a
-        find /usr -iname libgtest*.so
-        find /usr -iname libgtest*.dylib
-        find /usr -iname gmock*.h
-        find /usr -iname libgmock*.a
-        find /usr -iname libgmock*.dylib
-        find /usr -iname libgmock*.so
-        find /usr -iname gtest?config.cmake
-        find /usr -iname gmock?config.cmake
+        find /usr/local -iname gtest.h
+        find /usr/local -iname libgtest*.a
+        find /usr/local -iname libgtest*.so
+        find /usr/local -iname libgtest*.dylib
+        find /usr/local -iname gmock*.h
+        find /usr/local -iname libgmock*.a
+        find /usr/local -iname libgmock*.dylib
+        find /usr/local -iname libgmock*.so
+        find /usr/local -iname gtest?config.cmake
+        find /usr/local -iname gmock?config.cmake
 
     - name: CMake configure --- Ninja, Clang, Debug
       run: |
@@ -136,8 +136,8 @@ jobs:
 
     - name: CMake configure --- Ninja, Msvc, Debug
       run: |
-        echo cmake --preset Ninja-Msvc-Debug -D GTest_DIR=
-        cmake --preset Ninja-Msvc-Debug -D GTest_DIR=
+        echo cmake --preset Ninja-Msvc-Debug
+        cmake --preset Ninja-Msvc-Debug
 
     - name: CMake build --- Ninja, Msvc, Debug
       run: |
