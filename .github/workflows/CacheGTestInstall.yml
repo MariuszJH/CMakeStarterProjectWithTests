@@ -20,42 +20,28 @@ jobs:
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
 
-    - name: Is GTest preinstalled
+    - name: Install GTest but do NOT cache it (caching of GTest doesn't work on Ubuntu)
       run: |
-        find /usr/local -iname gtest.h
-        find /usr/local -iname libgtest*.a
-        find /usr/local -iname libgtest*.so
-        find /usr/local -iname libgtest*.dylib
-        find /usr/local -iname gmock*.h
-        find /usr/local -iname libgmock*.a
-        find /usr/local -iname libgmock*.dylib
-        find /usr/local -iname libgmock*.so
-        find /usr/local -iname gtest?config.cmake
-        find /usr/local -iname gmock?config.cmake
+        echo sudo apt-get install libgtest-dev
+        sudo apt-get install libgtest-dev
+        echo sudo apt-get install libgmock-dev
+        sudo apt-get install libgmock-dev
 
-    # - name: Install GTest but do NOT cache it (caching of GTest doesn't work on Ubuntu)
-    #   run: |
-    #     echo sudo apt-get install libgtest-dev
-    #     sudo apt-get install libgtest-dev
-    #     echo sudo apt-get install libgmock-dev
-    #     sudo apt-get install libgmock-dev
-
-    #     echo Find in /usr
-    #     find /usr/src/googletest -iname gtest*.h
-    #     find /usr/src/googletest -iname libgtest*.a
-    #     find /usr/src/googletest -iname libgtest*.so
-    #     find /usr/src/googletest -iname gmock*.h
-    #     find /usr/src/googletest -iname libgmock*.a
-    #     find /usr/src/googletest -iname libgmock*.so
-    #     find /usr/src/googletest -iname gtest*config.cmake
-    #     find /usr/src/googletest -iname gmock*config.cmake
+        echo Find in /usr
+        find /usr/src/googletest -iname gtest*.h
+        find /usr/src/googletest -iname libgtest*.a
+        find /usr/src/googletest -iname libgtest*.so
+        find /usr/src/googletest -iname gmock*.h
+        find /usr/src/googletest -iname libgmock*.a
+        find /usr/src/googletest -iname libgmock*.so
+        echo find /usr/src/googletest -iname gtest*config.cmake
+        find /usr/src/googletest -iname gtest*config.cmake
+        find /usr/src/googletest -iname gmock*config.cmake
         
     - name: CMake configure --- Ninja, Gnu, Debug
       run: |
-        echo cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/local
-        cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/local
-      # echo cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/src/googletest
-      # cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/src/googletest
+        echo cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/src/googletest
+        cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/src/googletest
 
     - name: CMake build --- Ninja, Gnu, Debug
       run: |
@@ -98,17 +84,17 @@ jobs:
 
     - name: Is GTest preinstalled
       run: |
-        find /usr/local -iname gtest.h
-        find /usr/local -iname libgtest*.a
-        find /usr/local -iname libgtest*.so
-        find /usr/local -iname libgtest*.dylib
-        find /usr/local -iname gmock*.h
-        find /usr/local -iname libgmock*.a
-        find /usr/local -iname libgmock*.dylib
-        find /usr/local -iname libgmock*.so
-        echo find /usr/local -iname GTestConfig.cmake
-        find /usr/local -iname GTestConfig.cmake
-        find /usr/local -iname gmock*config.cmake
+        find /usr/local/miniconda/lib/cmake/GTest -iname gtest.h
+        find /usr/local/miniconda/lib/cmake/GTest -iname libgtest*.a
+        find /usr/local/miniconda/lib/cmake/GTest -iname libgtest*.so
+        find /usr/local/miniconda/lib/cmake/GTest -iname libgtest*.dylib
+        find /usr/local/miniconda/lib/cmake/GTest -iname gmock*.h
+        find /usr/local/miniconda/lib/cmake/GTest -iname libgmock*.a
+        find /usr/local/miniconda/lib/cmake/GTest -iname libgmock*.dylib
+        find /usr/local/miniconda/lib/cmake/GTest -iname libgmock*.so
+        echo find /usr/local/miniconda/lib/cmake/GTest -iname GTestConfig.cmake
+        find /usr/local/miniconda/lib/cmake/GTest -iname GTestConfig.cmake
+        find /usr/local/miniconda/lib/cmake/GTest -iname gmock*config.cmake
 
     # - name: Is GTest not yet cached? Install GTest and cache it!
     #   if: steps.mac-GTest-ID-installed-cache2.outputs.cache-hit != 'true'
@@ -130,8 +116,8 @@ jobs:
 
     - name: CMake configure --- Ninja, Clang, Debug
       run: |
-        echo cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local
-        cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local
+        echo cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/miniconda/lib/cmake/GTest
+        cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/miniconda/lib/cmake/GTest
       # echo cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/Cellar/googletest
       # cmake --preset Ninja-Clang-Debug -D GTest_DIR=/usr/local/Cellar/googletest
 
