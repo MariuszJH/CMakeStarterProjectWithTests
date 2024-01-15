@@ -20,15 +20,34 @@ jobs:
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
 
-    - name: Install GTest but do NOT cache it (caching of GTest doesn't work on Ubuntu)
+    - name: Cache GTest
+      id: linux-GTest-ID-installed-cache1
+      uses: actions/cache@v3
+      with:
+        path: |
+          /usr/include/gtest/
+          /usr/lib/x86_64-linux-gnu/*gtest*
+          /usr/lib/x86_64-linux-gnu/*gmock*
+          /usr/lib/x86_64-linux-gnu/cmake/
+        key: linux-GTest-KEY-installed-cache1
+
+    - name: Is GTest cached? Do not install GTest!
+      if: steps.linux-GTest-ID-installed-cache1.outputs.cache-hit == 'true'
       run: |
-        echo find /usr/include -iname gtest*.h
-        find /usr/include -iname gtest*.h
+        echo YES cached!
+        find /usr/local/Cellar/ -iname gtest*.h
+        find /usr/local/Cellar/ -iname gmock*.h
+
+    - name: Is GTest not yet cached? Install GTest and cache it!
+      if: steps.linux-GTest-ID-installed-cache1.outputs.cache-hit != 'true'
+    # - name: Install GTest but do NOT cache it (caching of GTest doesn't work on Ubuntu)
+      run: |
         echo sudo apt-get install libgtest-dev
         sudo apt-get install libgtest-dev
         echo sudo apt-get install libgmock-dev
         sudo apt-get install libgmock-dev
 
+        echo NO not yet cached!
         echo find /usr/include -iname gtest*.h
         find /usr/include -iname gtest*.h
         echo find /usr/lib/x86_64-linux-gnu -iname libgtest*.a
@@ -37,12 +56,10 @@ jobs:
         find /usr/lib/x86_64-linux-gnu -iname gmock*.h
         find /usr/lib/x86_64-linux-gnu -iname libgmock*.a
         find /usr/lib/x86_64-linux-gnu -iname libgmock*.so
-        echo find /usr -iname gtest*config.cmake
-        find /usr -iname gtest*config.cmake
-        find /usr -iname gmock*config.cmake
+        echo find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname gtest*config.cmake
+        find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname gtest*config.cmake
+        find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname gmock*config.cmake
 
-        echo ls /usr/lib/x86_64-linux-gnu
-        ls /usr/lib/x86_64-linux-gnu
         echo ls /usr/lib/x86_64-linux-gnu/cmake/GTest
         ls /usr/lib/x86_64-linux-gnu/cmake/GTest
         
@@ -110,8 +127,11 @@ jobs:
     #     find /usr/local/Cellar/googletest -iname GTestConfig.cmake
     #     find /usr/local/Cellar/googletest -iname gmock?config.cmake
 
-    - name: Is GTest preinstalled?
+    - name: Install GTest
       run: |
+        echo brew install googletest
+        brew install googletest
+
         echo find /usr/local/include -iname gtest.h
         find /usr/local/include -iname gtest.h
         echo find /usr/local/lib -iname libgtest*.a
