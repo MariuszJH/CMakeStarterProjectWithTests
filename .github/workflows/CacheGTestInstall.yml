@@ -115,21 +115,22 @@ jobs:
       uses: actions/cache@v3
       with:
         path: |
-          /usr/local/Cellar/googletest
+          /usr/local/Cellar/googletest/1.14.0/include
+          /usr/local/lib/*gtest*
+          /usr/local/lib/*gmock*
+          /usr/local/lib/cmake/GTest/
         # /usr/include/gtest/
         # /usr/include/gmock/
-        # /usr/local/lib/*gtest*
-        # /usr/local/lib/*gmock*
-        # /usr/local/lib/cmake/
-        # /usr/local/lib/cmake/GTest/
         key: mac-GTest-KEY-installed-cache4
 
     - name: Restore GTest from cache; do not reinstall it!
       if: steps.mac-GTest-ID-installed-cache4.outputs.cache-hit == 'true'
       run: |
         echo YES cached!
-        echo find /usr/local -iname gtest.h
-        find /usr/local -iname gtest.h
+        echo find /usr -iname gtest.h
+        find /usr -iname gtest.h
+        echo find /usr -iname gmock.h
+        find /usr -iname gmock.h
         echo find /usr/local/lib -iname libgtest*.a
         find /usr/local/lib -iname libgtest*.a
         find /usr/local/lib -iname libgtest*.so
