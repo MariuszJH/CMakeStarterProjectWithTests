@@ -20,6 +20,19 @@ jobs:
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
 
+    - name: Is GTest preinstalled
+      run: |
+        find /usr/local -iname gtest.h
+        find /usr/local -iname libgtest*.a
+        find /usr/local -iname libgtest*.so
+        find /usr/local -iname libgtest*.dylib
+        find /usr/local -iname gmock*.h
+        find /usr/local -iname libgmock*.a
+        find /usr/local -iname libgmock*.dylib
+        find /usr/local -iname libgmock*.so
+        find /usr/local -iname gtest?config.cmake
+        find /usr/local -iname gmock?config.cmake
+
     # - name: Install GTest but do NOT cache it (caching of GTest doesn't work on Ubuntu)
     #   run: |
     #     echo sudo apt-get install libgtest-dev
@@ -39,8 +52,8 @@ jobs:
         
     - name: CMake configure --- Ninja, Gnu, Debug
       run: |
-        echo cmake --preset Ninja-Gnu-Debug
-        cmake --preset Ninja-Gnu-Debug
+        echo cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/local
+        cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/local
       # echo cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/src/googletest
       # cmake --preset Ninja-Gnu-Debug -D GTest_DIR=/usr/src/googletest
 
@@ -70,14 +83,14 @@ jobs:
       uses: seanmiddleditch/gha-setup-ninja@master
 
     - name: Cache GTest
-      id: mac-GTest-ID-installed-cache1
+      id: mac-GTest-ID-installed-cache2
       uses: actions/cache@v3
       with:
         path: /usr/local/Cellar
-        key: mac-GTest-KEY-installed-cache1
+        key: mac-GTest-KEY-installed-cache2
 
     - name: Is GTest cached? Do not install GTest!
-      if: steps.mac-GTest-ID-installed-cache1.outputs.cache-hit == 'true'
+      if: steps.mac-GTest-ID-installed-cache2.outputs.cache-hit == 'true'
       run: |
         echo YES cached!
         find /usr/local/Cellar/ -iname gtest*.h
@@ -93,11 +106,12 @@ jobs:
         find /usr/local -iname libgmock*.a
         find /usr/local -iname libgmock*.dylib
         find /usr/local -iname libgmock*.so
-        find /usr/local -iname gtest?config.cmake
-        find /usr/local -iname gmock?config.cmake
+        echo find /usr/local -iname GTestConfig.cmake
+        find /usr/local -iname GTestConfig.cmake
+        find /usr/local -iname gmock*config.cmake
 
     # - name: Is GTest not yet cached? Install GTest and cache it!
-    #   if: steps.mac-GTest-ID-installed-cache1.outputs.cache-hit != 'true'
+    #   if: steps.mac-GTest-ID-installed-cache2.outputs.cache-hit != 'true'
     #   run: |
     #     echo brew install googletest
     #     brew install googletest
