@@ -239,10 +239,42 @@ jobs:
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
 
-    - name: CMake configure --- Ninja, Msvc, Debug
+    - name: Check if dir exists
+      shell: bash
       run: |
+        if [[ -d External/googletest ]]; then
+          echo "Directory exists"
+        else 
+          echo "Directory does not exists"
+        fi
+
+    - name: CMake configure 1
+      if: steps.windows-GTest-ID-installed-cache1.outputs.cache-hit != 'true'
+      run: |
+        echo NO not yet cached!
         echo cmake --preset Ninja-Msvc-Debug
         cmake --preset Ninja-Msvc-Debug
+        ls External/googletest
+
+    - name: Cache GTest
+      id: windows-GTest-ID-installed-cache1
+      uses: actions/cache@v3
+      with:
+        path: External/googletest
+        key: windows-GTest-KEY-installed-cache1
+
+    - name: CMake configure 2
+      if: steps.windows-GTest-ID-installed-cache1.outputs.cache-hit == 'true'
+      run: |
+        echo YES cached!
+        echo cmake --preset Ninja-Msvc-Debug
+        cmake --preset Ninja-Msvc-Debug
+        ls External/googletest
+
+    # - name: CMake configure --- Ninja, Msvc, Debug
+    #   run: |
+    #     echo cmake --preset Ninja-Msvc-Debug
+    #     cmake --preset Ninja-Msvc-Debug
 
     - name: CMake build --- Ninja, Msvc, Debug
       run: |
@@ -258,22 +290,3 @@ jobs:
       run: |
         echo cmake --build --preset Ninja-Msvc-Debug
         cmake --build --preset Ninja-Msvc-Debug --target runUnitTest
-
-    - name: Cache GTest
-      id: windows-GTest-ID-installed-cache1
-      uses: actions/cache@v3
-      with:
-        path: External/googletest
-        key: windows-GTest-KEY-installed-cache1
-
-    - name: Restore GTest from cache; do not reinstall it!
-      if: steps.windows-GTest-ID-installed-cache1.outputs.cache-hit == 'true'
-      run: |
-        echo YES cached!
-        ls External/googletest
-
-    - name: Install GTest since it is not yet cached
-      if: steps.windows-GTest-ID-installed-cache1.outputs.cache-hit != 'true'
-      run: |
-        echo NO not yet cached!
-        ls External/googletest
