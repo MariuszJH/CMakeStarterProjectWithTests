@@ -20,13 +20,15 @@ jobs:
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
 
-    - name: Install GTest but do NOT cache it (caching of GTest doesn't work on Ubuntu)
-      run: |
-        echo sudo apt-get install libgtest-dev
-        sudo apt-get install libgtest-dev
-        echo sudo apt-get install libgmock-dev
-        sudo apt-get install libgmock-dev
+    # - name: Install GTest but do NOT cache it (caching of GTest doesn't work on Ubuntu)
+    #   run: |
+    #     echo sudo apt-get install libgtest-dev
+    #     sudo apt-get install libgtest-dev
+    #     echo sudo apt-get install libgmock-dev
+    #     sudo apt-get install libgmock-dev
 
+    - name: Is GTest preinstalled?
+      run: |
         echo Find in /usr
         find /usr/ -iname gtest*.h
         find /usr/ -iname libgtest*.a
@@ -34,6 +36,8 @@ jobs:
         find /usr/ -iname gmock*.h
         find /usr/ -iname libgmock*.a
         find /usr/ -iname libgmock*.so
+        find /usr/ -iname gtest?config.cmake
+        find /usr/ -iname gmock?config.cmake
         
     - name: CMake configure --- Ninja, Gnu, Debug
       run: |
@@ -86,14 +90,16 @@ jobs:
         brew install googletest
 
         echo NO not yet cached!
-        find /usr/local/Cellar -iname gtest.h
-        find /usr/local/Cellar -iname libgtest*.a
-        find /usr/local/Cellar -iname libgtest*.so
-        find /usr/local/Cellar -iname libgtest*.dylib
-        find /usr/local/Cellar -iname gmock*.h
-        find /usr/local/Cellar -iname libgmock*.a
-        find /usr/local/Cellar -iname libgmock*.dylib
-        find /usr/local/Cellar -iname libgmock*.so
+        find /usr -iname gtest.h
+        find /usr -iname libgtest*.a
+        find /usr -iname libgtest*.so
+        find /usr -iname libgtest*.dylib
+        find /usr -iname gmock*.h
+        find /usr -iname libgmock*.a
+        find /usr -iname libgmock*.dylib
+        find /usr -iname libgmock*.so
+        find /usr -iname gtest?config.cmake
+        find /usr -iname gmock?config.cmake
 
     - name: CMake configure --- Ninja, Clang, Debug
       run: |
