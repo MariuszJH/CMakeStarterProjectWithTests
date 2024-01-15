@@ -145,6 +145,8 @@ jobs:
         echo find /usr/local/lib/cmake/GTest -iname GTestConfig.cmake
         find /usr/local/lib/cmake/GTest -iname GTestConfig.cmake
         find /usr/local/lib/cmake/GTest -iname gmock?config.cmake
+        echo find /usr/local/Cellar/googletest -iname GTestConfig.cmake
+        find /usr/local/Cellar/googletest -iname GTestConfig.cmake
 
     - name: CMake configure --- Ninja, Clang, Debug
       run: |
