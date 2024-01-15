@@ -114,15 +114,22 @@ jobs:
       id: mac-GTest-ID-installed-cache4
       uses: actions/cache@v3
       with:
-        path: /usr/local/Cellar/googletest
+        path: |
+          /usr/local/Cellar/googletest
+        # /usr/include/gtest/
+        # /usr/include/gmock/
+        # /usr/local/lib/*gtest*
+        # /usr/local/lib/*gmock*
+        # /usr/local/lib/cmake/
+        # /usr/local/lib/cmake/GTest/
         key: mac-GTest-KEY-installed-cache4
 
     - name: Restore GTest from cache; do not reinstall it!
       if: steps.mac-GTest-ID-installed-cache4.outputs.cache-hit == 'true'
       run: |
         echo YES cached!
-        echo find /usr/local/include -iname gtest.h
-        find /usr/local/include -iname gtest.h
+        echo find /usr/local -iname gtest.h
+        find /usr/local -iname gtest.h
         echo find /usr/local/lib -iname libgtest*.a
         find /usr/local/lib -iname libgtest*.a
         find /usr/local/lib -iname libgtest*.so
@@ -136,6 +143,9 @@ jobs:
         find /usr/local/lib/cmake/GTest -iname gmock?config.cmake
         echo find /usr/local/Cellar/googletest -iname GTestConfig.cmake
         find /usr/local/Cellar/googletest -iname GTestConfig.cmake
+
+        echo ATTENTION ls /usr/local/lib/cmake/GTest/
+        ls /usr/local/lib/cmake/GTest/
 
       # /usr/local/lib/cmake/GTest
       # find /usr/local/Cellar/googletest -iname gtest.h
@@ -158,8 +168,8 @@ jobs:
         brew install googletest
 
         echo NO not yet cached!
-        echo find /usr/local/include -iname gtest.h
-        find /usr/local/include -iname gtest.h
+        echo find /usr/local -iname gtest.h
+        find /usr/local -iname gtest.h
         echo find /usr/local/lib -iname libgtest*.a
         find /usr/local/lib -iname libgtest*.a
         find /usr/local/lib -iname libgtest*.so
@@ -173,6 +183,9 @@ jobs:
         find /usr/local/lib/cmake/GTest -iname gmock?config.cmake
         echo find /usr/local/Cellar/googletest -iname GTestConfig.cmake
         find /usr/local/Cellar/googletest -iname GTestConfig.cmake
+
+        echo ATTENTION ls /usr/local/lib/cmake/GTest/
+        ls /usr/local/lib/cmake/GTest/
 
       # find /usr/local/Cellar/googletest -iname gtest.h
       # echo find /usr/local/Cellar/googletest -iname libgtest*.a
