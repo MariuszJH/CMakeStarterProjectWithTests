@@ -64,10 +64,10 @@ if(WIN32 OR NOT ${packageName}_FOUND)
     set(FETCHCONTENT_QUIET FALSE)
 
     # if(NOT EXISTS ${CMAKE_SOURCE_DIR}/External/googletest)
-    IF(EXISTS ${CMAKE_SOURCE_DIR}/External/googletest AND IS_DIRECTORY ${CMAKE_SOURCE_DIR}/External/googletest)
-        message(STATUS "googletest must have been fetched previously since ${CMAKE_SOURCE_DIR}/External/googletest already exists; not fetching googletest again!")
+    # IF(EXISTS ${CMAKE_SOURCE_DIR}/External/googletest AND IS_DIRECTORY ${CMAKE_SOURCE_DIR}/External/googletest)
+    #     message(STATUS "googletest must have been fetched previously since ${CMAKE_SOURCE_DIR}/External/googletest already exists; not fetching googletest again!")
 
-    else()
+    # else()
         message(STATUS "Fetching googletest ...")
 
         FetchContent_Declare(googletest
@@ -78,7 +78,7 @@ if(WIN32 OR NOT ${packageName}_FOUND)
             GIT_SHALLOW     TRUE
             USES_TERMINAL_DOWNLOAD TRUE   # <---- only used by Ninja generator
         )
-    endif()
+    # endif()
 
     FetchContent_MakeAvailable(googletest)
 endif()

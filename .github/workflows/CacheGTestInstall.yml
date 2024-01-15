@@ -169,8 +169,10 @@ jobs:
         brew install googletest
 
         echo NO not yet cached!
-        echo find /usr/local -iname gtest.h
-        find /usr/local -iname gtest.h
+        echo find /usr -iname gtest.h
+        find /usr -iname gtest.h
+        echo find /usr -iname gmock.h
+        find /usr -iname gmock.h
         echo find /usr/local/lib -iname libgtest*.a
         find /usr/local/lib -iname libgtest*.a
         find /usr/local/lib -iname libgtest*.so
