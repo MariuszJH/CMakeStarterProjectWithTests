@@ -247,27 +247,27 @@ jobs:
 
   build-on-windows:
     runs-on: windows-latest
-    env:
-      JAVA_VERSION: '11'
+    # env:
+    #   JAVA_VERSION: '11'
 
-    outputs:
-      test-result: ${{ steps.set_outputs.outputs.test-result }}
+    # outputs:
+    #   test-result: ${{ steps.set_outputs.outputs.test-result }}
 
     steps:
-    - name: Print value of env variable
-      run: echo "TEST_RESULT = $TEST_RESULT"
+    # - name: Print value of env variable
+    #   run: echo "TEST_RESULT = $TEST_RESULT"
 
-    - name: Change env variable
-      run: echo "::set-env name=TEST_RESULT::failure"
+    # - name: Change env variable
+    #   run: echo "::set-env name=TEST_RESULT::failure"
 
-    - name: Print new value of env variable
-      run: echo "TEST_RESULT = $TEST_RESULT"
+    # - name: Print new value of env variable
+    #   run: echo "TEST_RESULT = $TEST_RESULT"
 
     # set step-level output and pass the value of env variable to it
-    - name: set outputs
-      id: set_outputs
-      run: |
-        echo "::set-output name=test-result::$TEST_RESULT"
+    # - name: set outputs
+    #   id: set_outputs
+    #   run: |
+    #     echo "::set-output name=test-result::$TEST_RESULT"
   
     - name: Checkout repo
       uses: actions/checkout@v4
@@ -327,10 +327,10 @@ jobs:
         SELECTED_COLOR: ${{ steps.color-selector.outputs.SELECTED_COLOR }}
       run: echo "The selected color is $SELECTED_COLOR"
 
-    - name: Print name
-      run: echo "Hello $NAME. $BUILD. Using Java Version $JAVA_VERSION"
-      env:
-        BUILD: 'We are currently running the Build job'
+    # - name: Print name
+    #   run: echo "Hello $NAME. $BUILD. Using Java Version $JAVA_VERSION"
+    #   env:
+    #     BUILD: 'We are currently running the Build job'
 
     # - name: Check if dir exists
     #   shell: bash
