@@ -123,20 +123,23 @@ jobs:
         # /usr/include/gmock/
         key: mac-GTest-KEY-installed-cache4
 
-    - name: Grant tar root ownership and execution (needed to untar cached objects)
-      run: |
-        echo which find
-        which find
-        sudo chown root /usr/bin/find && sudo chmod u+s /usr/bin/find
+    # - name: Grant tar root ownership and execution (needed to untar cached objects)
+    #   run: |
+    #     echo which find
+    #     which find
+    #     sudo chown root /usr/bin/find && sudo chmod u+s /usr/bin/find
+
+    - name: Look for header files
+      run: ls /usr
 
     - name: Restore GTest from cache; do not reinstall it!
       if: steps.mac-GTest-ID-installed-cache4.outputs.cache-hit == 'true'
       run: |
         echo YES cached!
-        echo find /usr -iname gtest.h
-        find /usr -iname gtest.h
-        echo find /usr -iname gmock.h
-        find /usr -iname gmock.h
+        echo find /usr/local -iname gtest.h
+        find /usr/local -iname gtest.h
+        echo find /usr/local -iname gmock.h
+        find /usr/local -iname gmock.h
         echo find /usr/local/lib -iname libgtest*.a
         find /usr/local/lib -iname libgtest*.a
         find /usr/local/lib -iname libgtest*.so
@@ -248,54 +251,74 @@ jobs:
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
 
-    - name: Check if dir exists
-      shell: bash
+    - name: Set variables
       run: |
-        if [[ -d External/googletest ]]; then
-          echo "Directory exists"
-        else 
-          echo "Directory does not exists"
-        fi
+        tests=16
+        failures=2
+        # set them as GitHub ENV variables
+        echo "Tests=$tests" >> $GITHUB_ENV
+        echo "Failures=$failures" >> $GITHUB_ENV
 
-    - name: CMake configure 1
-      if: steps.windows-GTest-ID-installed-cache1.outputs.cache-hit != 'true'
+    - name: Retrive and reset variables
       run: |
-        echo NO not yet cached!
-        echo cmake --preset Ninja-Msvc-Debug
-        cmake --preset Ninja-Msvc-Debug
-        ls External/googletest
+        tests=22
+        failures=3
+        echo "${{ env.Failures }} out of ${{ env.Tests }} tests failed on CI"
+        echo "Tests=$tests" >> $GITHUB_ENV
+        echo "Failures=$failures" >> $GITHUB_ENV
 
-    - name: Cache GTest
-      id: windows-GTest-ID-installed-cache1
-      uses: actions/cache@v3
-      with:
-        path: External/googletest
-        key: windows-GTest-KEY-installed-cache1
-
-    - name: CMake configure 2
-      if: steps.windows-GTest-ID-installed-cache1.outputs.cache-hit == 'true'
+    - name: Retrive variables
       run: |
-        echo YES cached!
-        echo cmake --preset Ninja-Msvc-Debug
-        cmake --preset Ninja-Msvc-Debug
-        ls External/googletest
+        echo "${{ env.Failures }} out of ${{ env.Tests }} tests failed on CI"
 
-    # - name: CMake configure --- Ninja, Msvc, Debug
+    # - name: Check if dir exists
+    #   shell: bash
     #   run: |
+    #     if [[ -d External/googletest ]]; then
+    #       echo "Directory exists"
+    #     else 
+    #       echo "Directory does not exists"
+    #     fi
+
+    # - name: CMake configure 1
+    #   if: steps.windows-GTest-ID-installed-cache1.outputs.cache-hit != 'true'
+    #   run: |
+    #     echo NO not yet cached!
     #     echo cmake --preset Ninja-Msvc-Debug
     #     cmake --preset Ninja-Msvc-Debug
+    #     ls External/googletest
 
-    - name: CMake build --- Ninja, Msvc, Debug
-      run: |
-        echo cmake --build --preset Ninja-Msvc-Debug
-        cmake --build --preset Ninja-Msvc-Debug
+    # - name: Cache GTest
+    #   id: windows-GTest-ID-installed-cache1
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: External/googletest
+    #     key: windows-GTest-KEY-installed-cache1
 
-    - name: CMake run --- Ninja, Msvc, Debug
-      run: |
-        echo cmake --build --preset Ninja-Msvc-Debug
-        cmake --build --preset Ninja-Msvc-Debug --target run
+    # - name: CMake configure 2
+    #   if: steps.windows-GTest-ID-installed-cache1.outputs.cache-hit == 'true'
+    #   run: |
+    #     echo YES cached!
+    #     echo cmake --preset Ninja-Msvc-Debug
+    #     cmake --preset Ninja-Msvc-Debug
+    #     ls External/googletest
 
-    - name: CMake unit test --- Ninja, Msvc, Debug
-      run: |
-        echo cmake --build --preset Ninja-Msvc-Debug
-        cmake --build --preset Ninja-Msvc-Debug --target runUnitTest
+    # # - name: CMake configure --- Ninja, Msvc, Debug
+    # #   run: |
+    # #     echo cmake --preset Ninja-Msvc-Debug
+    # #     cmake --preset Ninja-Msvc-Debug
+
+    # - name: CMake build --- Ninja, Msvc, Debug
+    #   run: |
+    #     echo cmake --build --preset Ninja-Msvc-Debug
+    #     cmake --build --preset Ninja-Msvc-Debug
+
+    # - name: CMake run --- Ninja, Msvc, Debug
+    #   run: |
+    #     echo cmake --build --preset Ninja-Msvc-Debug
+    #     cmake --build --preset Ninja-Msvc-Debug --target run
+
+    # - name: CMake unit test --- Ninja, Msvc, Debug
+    #   run: |
+    #     echo cmake --build --preset Ninja-Msvc-Debug
+    #     cmake --build --preset Ninja-Msvc-Debug --target runUnitTest
