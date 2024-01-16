@@ -123,6 +123,12 @@ jobs:
         # /usr/include/gmock/
         key: mac-GTest-KEY-installed-cache4
 
+    - name: Grant tar root ownership and execution (needed to untar cached objects)
+      run: |
+        echo which find
+        which find
+        sudo chown root /usr/bin/find && sudo chmod u+s /usr/bin/find
+
     - name: Restore GTest from cache; do not reinstall it!
       if: steps.mac-GTest-ID-installed-cache4.outputs.cache-hit == 'true'
       run: |
