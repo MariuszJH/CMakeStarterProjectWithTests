@@ -9,6 +9,7 @@ on:
 env:
   projectName: CMakeStarterProjectWithTests
   # GTest_VERSION: 1.13.0
+  NAME: 'Snyk Demo'
 
 jobs:
   build-on-linux:
@@ -130,10 +131,10 @@ jobs:
     #     sudo chown root /usr/bin/find && sudo chmod u+s /usr/bin/find
 
     - name: Look for header files 1
-      run: ls /usr/lib
+      run: ls /usr/local/lib
 
     - name: Look for header files 2
-      run: ls /usr/local
+      run: ls /usr/local/include
 
     - name: Restore GTest from cache; do not reinstall it!
       if: steps.mac-GTest-ID-installed-cache4.outputs.cache-hit == 'true'
@@ -246,7 +247,28 @@ jobs:
 
   build-on-windows:
     runs-on: windows-latest
+    env:
+      JAVA_VERSION: '11'
+
+    outputs:
+      test-result: ${{ steps.set_outputs.outputs.test-result }}
+
     steps:
+    - name: Print value of env variable
+      run: echo "TEST_RESULT = $TEST_RESULT"
+
+    - name: Change env variable
+      run: echo "::set-env name=TEST_RESULT::failure"
+
+    - name: Print new value of env variable
+      run: echo "TEST_RESULT = $TEST_RESULT"
+
+    # set step-level output and pass the value of env variable to it
+    - name: set outputs
+      id: set_outputs
+      run: |
+        echo "::set-output name=test-result::$TEST_RESULT"
+  
     - name: Checkout repo
       uses: actions/checkout@v4
 
@@ -256,6 +278,26 @@ jobs:
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
 
+    - name: Set value
+      id: step1
+      run: echo "action_state=yellow" >> "$GITHUB_ENV"
+
+    - name: get value 1
+      id: step2
+      run: echo "$action_state
+
+    - name: get value 1
+      id: step2
+      run: echo "$action_state
+
+    - name: reset value
+      id: step3
+      run: echo "action_state=red" >> "$GITHUB_ENV"
+
+    - name: get value 2
+      id: step4
+      run: echo "$action_state
+        
     # - name: Set variables
     #   run: |
     #     tests=16
@@ -279,10 +321,16 @@ jobs:
     - name: Set color
       id: color-selector
       run: echo "SELECTED_COLOR=green" >> "$GITHUB_OUTPUT"
+
     - name: Get color
       env:
         SELECTED_COLOR: ${{ steps.color-selector.outputs.SELECTED_COLOR }}
       run: echo "The selected color is $SELECTED_COLOR"
+
+    - name: Print name
+      run: echo "Hello $NAME. $BUILD. Using Java Version $JAVA_VERSION"
+      env:
+        BUILD: 'We are currently running the Build job'
 
     # - name: Check if dir exists
     #   shell: bash
