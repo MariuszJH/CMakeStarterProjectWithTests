@@ -287,15 +287,15 @@ jobs:
       run: echo "$action_state
 
     - name: get value 1
-      id: step2
+      id: step3
       run: echo "$action_state
 
     - name: reset value
-      id: step3
+      id: step4
       run: echo "action_state=red" >> "$GITHUB_ENV"
 
     - name: get value 2
-      id: step4
+      id: step5
       run: echo "$action_state
         
     # - name: Set variables
