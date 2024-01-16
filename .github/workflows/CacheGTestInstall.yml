@@ -284,11 +284,11 @@ jobs:
 
     - name: get value 1
       id: step2
-      run: echo "$action_state
+      run: echo "$action_state"
 
     - name: get value 1
       id: step3
-      run: echo "$action_state
+      run: echo "$action_state"
 
     - name: reset value
       id: step4
@@ -296,7 +296,7 @@ jobs:
 
     - name: get value 2
       id: step5
-      run: echo "$action_state
+      run: echo "$action_state"
         
     # - name: Set variables
     #   run: |
