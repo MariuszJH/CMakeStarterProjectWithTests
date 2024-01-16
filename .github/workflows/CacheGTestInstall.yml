@@ -129,8 +129,11 @@ jobs:
     #     which find
     #     sudo chown root /usr/bin/find && sudo chmod u+s /usr/bin/find
 
-    - name: Look for header files
-      run: ls /usr
+    - name: Look for header files 1
+      run: ls /usr/lib
+
+    - name: Look for header files 2
+      run: ls /usr/local
 
     - name: Restore GTest from cache; do not reinstall it!
       if: steps.mac-GTest-ID-installed-cache4.outputs.cache-hit == 'true'
@@ -154,8 +157,10 @@ jobs:
         echo find /usr/local/Cellar/googletest -iname GTestConfig.cmake
         find /usr/local/Cellar/googletest -iname GTestConfig.cmake
 
-        echo ATTENTION ls /usr/local/lib/cmake/GTest/
-        ls /usr/local/lib/cmake/GTest/
+        # echo ATTENTION ls /usr/local/lib/cmake/GTest/
+        # ls /usr/local/lib/cmake/GTest/
+        echo ATTENTION ls /usr/local/lib
+        ls /usr/local/lib
 
       # /usr/local/lib/cmake/GTest
       # find /usr/local/Cellar/googletest -iname gtest.h
@@ -251,25 +256,33 @@ jobs:
     - name: Install Ninja
       uses: seanmiddleditch/gha-setup-ninja@master
 
-    - name: Set variables
-      run: |
-        tests=16
-        failures=2
-        # set them as GitHub ENV variables
-        echo "Tests=$tests" >> $GITHUB_ENV
-        echo "Failures=$failures" >> $GITHUB_ENV
+    # - name: Set variables
+    #   run: |
+    #     tests=16
+    #     failures=2
+    #     # set them as GitHub ENV variables
+    #     echo "Tests=$tests" >> $GITHUB_ENV
+    #     echo "Failures=$failures" >> $GITHUB_ENV
 
-    - name: Retrive and reset variables
-      run: |
-        tests=22
-        failures=3
-        echo "${{ env.Failures }} out of ${{ env.Tests }} tests failed on CI"
-        echo "Tests=$tests" >> $GITHUB_ENV
-        echo "Failures=$failures" >> $GITHUB_ENV
+    # - name: Retrive and reset variables
+    #   run: |
+    #     tests=22
+    #     failures=3
+    #     echo "${{ env.Failures }} out of ${{ env.Tests }} tests failed on CI"
+    #     echo "Tests=$tests" >> $GITHUB_ENV
+    #     echo "Failures=$failures" >> $GITHUB_ENV
 
-    - name: Retrive variables
-      run: |
-        echo "${{ env.Failures }} out of ${{ env.Tests }} tests failed on CI"
+    # - name: Retrive variables
+    #   run: |
+    #     echo "${{ env.Failures }} out of ${{ env.Tests }} tests failed on CI"
+
+    - name: Set color
+      id: color-selector
+      run: echo "SELECTED_COLOR=green" >> "$GITHUB_OUTPUT"
+    - name: Get color
+      env:
+        SELECTED_COLOR: ${{ steps.color-selector.outputs.SELECTED_COLOR }}
+      run: echo "The selected color is $SELECTED_COLOR"
 
     # - name: Check if dir exists
     #   shell: bash
