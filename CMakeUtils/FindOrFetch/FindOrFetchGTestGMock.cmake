@@ -64,19 +64,19 @@ if(WIN32 OR NOT ${packageName}_FOUND)
     set(FETCHCONTENT_QUIET FALSE)
     set(externalProjectDir ${CMAKE_SOURCE_DIR}/External/googletest)
     set(externalProjectUrl https://github.com/google/googletest.git)
-
+    
     # This assumes that externalProjectDir is not empty and contains all sources downloaded in the 'else' clause
     if(EXISTS ${externalProjectDir} AND IS_DIRECTORY ${externalProjectDir})
         message(STATUS "Not fetching ${packageName} again from ${externalProjectUrl} since it's already downloaded locally into ${externalProjectDir}")
 
-        FetchContent_Declare(GTest
+        FetchContent_Declare(googletest
             SOURCE_DIR      ${externalProjectDir}
         )
 
     else()
         message(STATUS "Fetching ${packageName} from remote repo: ${externalProjectUrl}")
 
-        FetchContent_Declare(GTest
+        FetchContent_Declare(googletest
             GIT_REPOSITORY  ${externalProjectUrl}
             GIT_TAG         main # v1.14.0
             SOURCE_DIR      ${externalProjectDir}
@@ -86,10 +86,7 @@ if(WIN32 OR NOT ${packageName}_FOUND)
         )
     endif()
 
-    FetchContent_MakeAvailable(GTest)
+    FetchContent_MakeAvailable(googletest)
 endif()
 
 include(GoogleTest)
-message("GTEST_DIR: " ${GTEST_DIR})
-message("GTEST_DIR_INCLUDE: " ${GTEST_DIR_INCLUDE})
-message("GTEST_INCLUDE_DIRS: " ${GTEST_INCLUDE_DIRS})
