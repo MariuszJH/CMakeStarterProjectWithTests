@@ -49,7 +49,7 @@ jobs:
       if: steps.linux-GTest-ID-external-cache1.outputs.cache-hit != 'true'
       run: |
         echo NO not yet cached!
-        ls External
+        ls 
 
     - name: CMake configure --- Ninja, Gnu, Debug
       run: |
@@ -110,7 +110,7 @@ jobs:
       if: steps.mac-GTest-ID-external-cache1.outputs.cache-hit != 'true'
       run: |
         echo NO not yet cached!
-        ls External
+        ls 
 
     - name: CMake configure --- Ninja, Clang, Debug
       run: |
@@ -176,7 +176,7 @@ jobs:
       shell: bash
       run: |
         echo NO not yet cached!
-        ls External
+        ls 
 
     - name: CMake configure --- Ninja, Msvc, Debug
       run: |
@@ -197,3 +197,4 @@ jobs:
       run: |
         echo cmake --build --preset Ninja-Msvc-Release
         cmake --build --preset Ninja-Msvc-Release
+
