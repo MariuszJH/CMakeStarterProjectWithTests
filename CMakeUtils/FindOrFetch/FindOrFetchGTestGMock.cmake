@@ -90,3 +90,6 @@ if(WIN32 OR NOT ${packageName}_FOUND)
 endif()
 
 include(GoogleTest)
+message("GTEST_DIR: " ${GTEST_DIR})
+message("GTEST_DIR_INCLUDE: " ${GTEST_DIR_INCLUDE})
+message("GTEST_INCLUDE_DIRS: " ${GTEST_INCLUDE_DIRS})
