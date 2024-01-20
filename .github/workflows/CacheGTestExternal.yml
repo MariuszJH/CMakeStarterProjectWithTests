@@ -61,6 +61,16 @@ jobs:
         echo cmake --build --preset Ninja-Gnu-Debug
         cmake --build --preset Ninja-Gnu-Debug
 
+    - name: CMake run program --- Ninja, Gnu, Debug
+      run: |
+        echo cmake --build --preset Ninja-Gnu-Debug --target run
+        cmake --build --preset Ninja-Gnu-Debug --target run
+
+    - name: CMake run unit tests --- Ninja, Gnu, Debug
+      run: |
+        echo cmake --build --preset Ninja-Gnu-Debug --target runUnitTest
+        cmake --build --preset Ninja-Gnu-Debug --target runUnitTest
+
     - name: CMake configure --- Ninja, Gnu, Release
       run: |
         echo cmake --preset Ninja-Gnu-Release
@@ -70,6 +80,16 @@ jobs:
       run: |
         echo cmake --build --preset Ninja-Gnu-Release
         cmake --build --preset Ninja-Gnu-Release
+
+    - name: CMake run program --- Ninja, Gnu, Release
+      run: |
+        echo cmake --build --preset Ninja-Gnu-Release --target run
+        cmake --build --preset Ninja-Gnu-Release --target run
+
+    - name: CMake run unit tests --- Ninja, Gnu, Release
+      run: |
+        echo cmake --build --preset Ninja-Gnu-Release --target runUnitTest
+        cmake --build --preset Ninja-Gnu-Release --target runUnitTest
 
 
   build-on-macos:
@@ -122,6 +142,16 @@ jobs:
         echo cmake --build --preset Ninja-Clang-Debug
         cmake --build --preset Ninja-Clang-Debug
 
+    - name: CMake run program --- Ninja, Clang, Debug
+      run: |
+        echo cmake --build --preset Ninja-Clang-Debug --target run
+        cmake --build --preset Ninja-Clang-Debug --target run
+
+    - name: CMake run unit tests --- Ninja, Clang, Debug
+      run: |
+        echo cmake --build --preset Ninja-Clang-Debug --target runUnitTest
+        cmake --build --preset Ninja-Clang-Debug --target runUnitTest
+
     - name: CMake configure --- Ninja, Clang, Release
       run: |
         echo cmake --preset Ninja-Clang-Release
@@ -131,6 +161,16 @@ jobs:
       run: |
         echo cmake --build --preset Ninja-Clang-Release
         cmake --build --preset Ninja-Clang-Release
+
+    - name: CMake run program --- Ninja, Clang, Release
+      run: |
+        echo cmake --build --preset Ninja-Clang-Release --target run
+        cmake --build --preset Ninja-Clang-Release --target run
+
+    - name: CMake run unit tests --- Ninja, Clang, Release
+      run: |
+        echo cmake --build --preset Ninja-Clang-Release --target runUnitTest
+        cmake --build --preset Ninja-Clang-Release --target runUnitTest
 
 
   build-on-windows:
@@ -188,6 +228,16 @@ jobs:
         echo cmake --build --preset Ninja-Msvc-Debug
         cmake --build --preset Ninja-Msvc-Debug
 
+    - name: CMake run program --- Ninja, Msvc, Debug
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Debug --target run
+        cmake --build --preset Ninja-Msvc-Debug --target run
+
+    - name: CMake run unit tests --- Ninja, Msvc, Debug
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Debug --target runUnitTest
+        cmake --build --preset Ninja-Msvc-Debug --target runUnitTest
+
     - name: CMake configure --- Ninja, Msvc, Release
       run: |
         echo cmake --preset Ninja-Msvc-Release
@@ -198,3 +248,12 @@ jobs:
         echo cmake --build --preset Ninja-Msvc-Release
         cmake --build --preset Ninja-Msvc-Release
 
+    - name: CMake run program --- Ninja, Msvc, Release
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Release --target run
+        cmake --build --preset Ninja-Msvc-Release --target run
+
+    - name: CMake run unit tests --- Ninja, Msvc, Release
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Release --target runUnitTest
+        cmake --build --preset Ninja-Msvc-Release --target runUnitTest
