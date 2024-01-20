@@ -1,0 +1,199 @@
+name: Cache GTest External
+
+on:
+  push: 
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+env:
+  projectName: CMakeStarterProjectWithTests
+  SDL_VERSION: 1.13.0
+
+jobs:
+  build-on-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: CMake fetch googletest into External/googletest and cache it or else restore it from cache without fetching again
+      id: linux-GTest-ID-external-cache1
+      uses: actions/cache@v3
+      with:
+        path: External/googletest
+        key: linux-GTest-KEY-external-cache1
+
+    - name: Has googletest been downloaded from remote repo?
+      shell: bash
+      run: |
+        if [[ -d External/googletest ]]; then
+          echo directory exists!
+        else
+          echo directory does not exist!
+        fi
+
+    - name: Is googletest cached?
+      if: steps.linux-GTest-ID-external-cache1.outputs.cache-hit == 'true'
+      run: |
+        echo YES cached!
+        find External/googletest -iname gtest.h
+        find External/googletest -iname gmock.h
+        find External/googletest -iname lib*
+        find External/googletest -iname *Config.cmake
+
+    - name: Is googletest not yet cached?
+      if: steps.linux-GTest-ID-external-cache1.outputs.cache-hit != 'true'
+      run: |
+        echo NO not yet cached!
+        ls External
+
+    - name: CMake configure --- Ninja, Gnu, Debug
+      run: |
+        echo cmake --preset Ninja-Gnu-Debug
+        cmake --preset Ninja-Gnu-Debug
+
+    - name: CMake build --- Ninja, Gnu, Debug
+      run: |
+        echo cmake --build --preset Ninja-Gnu-Debug
+        cmake --build --preset Ninja-Gnu-Debug
+
+    - name: CMake configure --- Ninja, Gnu, Release
+      run: |
+        echo cmake --preset Ninja-Gnu-Release
+        cmake --preset Ninja-Gnu-Release
+
+    - name: CMake build --- Ninja, Gnu, Release
+      run: |
+        echo cmake --build --preset Ninja-Gnu-Release
+        cmake --build --preset Ninja-Gnu-Release
+
+
+  build-on-macos:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: CMake fetch googletest into External/googletest and cache it or else restore it from cache without fetching again
+      id: mac-GTest-ID-external-cache1
+      uses: actions/cache@v3
+      with:
+        path: External/googletest
+        key: mac-GTest-KEY-external-cache1
+
+    - name: Has googletest been downloaded from remote repo?
+      shell: bash
+      run: |
+        if [[ -d External/googletest ]]; then
+          echo directory exists!
+        else
+          echo directory does not exist!
+        fi
+
+    - name: Is googletest cached?
+      if: steps.mac-GTest-ID-external-cache1.outputs.cache-hit == 'true'
+      run: |
+        echo YES cached!
+        find External/googletest -iname gtest.h
+        find External/googletest -iname gmock.h
+        find External/googletest -iname lib*
+        find External/googletest -iname *Config.cmake
+
+    - name: Is googletest not yet cached?
+      if: steps.mac-GTest-ID-external-cache1.outputs.cache-hit != 'true'
+      run: |
+        echo NO not yet cached!
+        ls External
+
+    - name: CMake configure --- Ninja, Clang, Debug
+      run: |
+        echo cmake --preset Ninja-Clang-Debug
+        cmake --preset Ninja-Clang-Debug
+
+    - name: CMake build --- Ninja, Clang, Debug
+      run: |
+        echo cmake --build --preset Ninja-Clang-Debug
+        cmake --build --preset Ninja-Clang-Debug
+
+    - name: CMake configure --- Ninja, Clang, Release
+      run: |
+        echo cmake --preset Ninja-Clang-Release
+        cmake --preset Ninja-Clang-Release
+
+    - name: CMake build --- Ninja, Clang, Release
+      run: |
+        echo cmake --build --preset Ninja-Clang-Release
+        cmake --build --preset Ninja-Clang-Release
+
+
+  build-on-windows:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Setup MSVC compiler
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: CMake fetch googletest into External/googletest and cache it or else restore it from cache without fetching again
+      id: windows-GTest-ID-external-cache1
+      uses: actions/cache@v3
+      with:
+        path: External/googletest
+        key: windows-GTest-KEY-external-cache1
+
+    - name: Has googletest been downloaded from remote repo?
+      shell: bash
+      run: |
+        if [[ -d External/googletest ]]; then
+          echo directory exists!
+        else
+          echo directory does not exist!
+        fi
+
+    - name: Is googletest cached?
+      if: steps.windows-GTest-ID-external-cache1.outputs.cache-hit == 'true'
+      shell: bash
+      run: |
+        echo YES cached!
+        find External/googletest -iname gtest.h
+        find External/googletest -iname gmock.h
+        find External/googletest -iname lib*
+        find External/googletest -iname *Config.cmake
+
+    - name: Is googletest not yet cached?
+      if: steps.windows-GTest-ID-external-cache1.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        echo NO not yet cached!
+        ls External
+
+    - name: CMake configure --- Ninja, Msvc, Debug
+      run: |
+        echo cmake --preset Ninja-Msvc-Debug
+        cmake --preset Ninja-Msvc-Debug
+
+    - name: CMake build --- Ninja, Msvc, Debug
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Debug
+        cmake --build --preset Ninja-Msvc-Debug
+
+    - name: CMake configure --- Ninja, Msvc, Release
+      run: |
+        echo cmake --preset Ninja-Msvc-Release
+        cmake --preset Ninja-Msvc-Release
+
+    - name: CMake build --- Ninja, Msvc, Release
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Release
+        cmake --build --preset Ninja-Msvc-Release

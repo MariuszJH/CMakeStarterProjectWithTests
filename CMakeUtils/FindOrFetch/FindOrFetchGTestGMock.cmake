@@ -27,7 +27,7 @@ if(NOT DEFINED ${packageName}_DIR)
         if(LINUX)
             # set(${packageName}_DIR /opt/googletest/shared/lib64/cmake/GTest)
         elseif(APPLE)
-            set(${packageName}_DIR /opt/googletest/${compilerSubDir}/shared/lib/cmake/GTest)
+            # set(${packageName}_DIR /opt/googletest/${compilerSubDir}/shared/lib/cmake/GTest)
         elseif(UNIX AND NOT APPLE)
             set(${packageName}_DIR )
         endif()
@@ -35,7 +35,7 @@ if(NOT DEFINED ${packageName}_DIR)
         if(LINUX)
             # set(${packageName}_DIR /opt/googletest/static/lib64/cmake/GTest)
         elseif(APPLE)
-            set(${packageName}_DIR /opt/googletest/${compilerSubDir}/static/lib/cmake/GTest)
+            # set(${packageName}_DIR /opt/googletest/${compilerSubDir}/static/lib/cmake/GTest)
         elseif(UNIX AND NOT APPLE)
             set(${packageName}_DIR )
         endif()
@@ -47,7 +47,7 @@ endif()
 
 if(NOT WIN32)
     # Omit the REQUIRED keyword so as to be able to fetch the package (as below) if it is not installed
-    find_package(${packageName} ${packageVersion})
+    # find_package(${packageName} ${packageVersion})
 
     if(${packageName}_FOUND)
         message(STATUS "${packageName}_FOUND: ${${packageName}_FOUND}")
@@ -62,25 +62,31 @@ endif()
 if(WIN32 OR NOT ${packageName}_FOUND)
     include(FetchContent)
     set(FETCHCONTENT_QUIET FALSE)
+    set(externalProjectDir ${CMAKE_SOURCE_DIR}/External/googletest)
+    set(externalProjectUrl https://github.com/google/googletest.git)
 
-    # if(NOT EXISTS ${CMAKE_SOURCE_DIR}/External/googletest)
-    # IF(EXISTS ${CMAKE_SOURCE_DIR}/External/googletest AND IS_DIRECTORY ${CMAKE_SOURCE_DIR}/External/googletest)
-    #     message(STATUS "googletest must have been fetched previously since ${CMAKE_SOURCE_DIR}/External/googletest already exists; not fetching googletest again!")
+    # This assumes that externalProjectDir is not empty and contains all sources downloaded in the 'else' clause
+    if(EXISTS ${externalProjectDir} AND IS_DIRECTORY ${externalProjectDir})
+        message(STATUS "Not fetching ${packageName} again from ${externalProjectUrl} since it's already downloaded locally into ${externalProjectDir}")
 
-    # else()
-        message(STATUS "Fetching googletest ...")
+        FetchContent_Declare(GTest
+            SOURCE_DIR      ${externalProjectDir}
+        )
 
-        FetchContent_Declare(googletest
-            GIT_REPOSITORY  https://github.com/google/googletest.git
+    else()
+        message(STATUS "Fetching ${packageName} from remote repo: ${externalProjectUrl}")
+
+        FetchContent_Declare(GTest
+            GIT_REPOSITORY  ${externalProjectUrl}
             GIT_TAG         main # v1.14.0
-            SOURCE_DIR      ${CMAKE_SOURCE_DIR}/External/googletest
+            SOURCE_DIR      ${externalProjectDir}
             GIT_PROGRESS    TRUE
             GIT_SHALLOW     TRUE
             USES_TERMINAL_DOWNLOAD TRUE   # <---- only used by Ninja generator
         )
-    # endif()
+    endif()
 
-    FetchContent_MakeAvailable(googletest)
+    FetchContent_MakeAvailable(GTest)
 endif()
 
 include(GoogleTest)
