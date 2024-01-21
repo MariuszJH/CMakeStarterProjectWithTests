@@ -55,6 +55,10 @@ jobs:
         echo find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
         find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
 
+        echo ls /usr/lib/x86_64-linux-gnu/cmake/
+        ls /usr/lib/x86_64-linux-gnu/cmake/
+        
+
     - name: Restore GTest from cache; do not reinstall it!
       if: steps.linux-GTest-ID-installed-cache2.outputs.cache-hit == 'true'
       run: |
@@ -69,6 +73,9 @@ jobs:
         find /usr/lib/x86_64-linux-gnu -iname libGTest.so
         echo find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
         find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
+
+        echo ls /usr/lib/x86_64-linux-gnu/cmake/
+        ls /usr/lib/x86_64-linux-gnu/cmake/
 
     - name: CMake configure --- Ninja, Gnu, Debug
       run: |
@@ -149,6 +156,9 @@ jobs:
         echo find /usr/local -iname g*test*Config.cmake
         find /usr/local -iname g*test*Config.cmake
 
+        echo ls /usr/local/Cellar/googletest/1.14.0/lib/cmake
+        ls /usr/local/Cellar/googletest/1.14.0/lib/cmake
+
     - name: Restore GTest from cache; do not reinstall it!
       if: steps.mac-GTest-ID-installed-cache2.outputs.cache-hit == 'true'
       run: |
@@ -162,6 +172,9 @@ jobs:
 
         echo find /usr/local -iname g*test*Config.cmake
         find /usr/local -iname g*test*Config.cmake
+
+        echo ls /usr/local/Cellar/googletest/1.14.0/lib/cmake
+        ls /usr/local/Cellar/googletest/1.14.0/lib/cmake
 
     - name: CMake configure --- Ninja, Clang, Debug
       run: |
