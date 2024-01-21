@@ -125,10 +125,11 @@ jobs:
       uses: actions/cache@v3
       with:
         path: |
-          /usr/local/Cellar/googletest/1.14.0/include
-          /usr/local/lib/libgtest*
-          /usr/local/lib/libgmock*
-          /usr/local/lib/cmake/GTest/
+          /usr/local/Cellar/googletest
+      # /usr/local/Cellar/googletest/1.14.0/include
+      # /usr/local/lib/libgtest*
+      # /usr/local/lib/libgmock*
+      # /usr/local/lib/cmake/GTest/
         key: mac-GTest-KEY-installed-cache2
 
     - name: Install GTest only if it is not yet cached
@@ -159,8 +160,8 @@ jobs:
         echo find /usr/local/Cellar/googletest -iname libGTest*
         find /usr/local/Cellar/googletest -iname libGTest*
 
-        echo find /usr -iname g*test*Config.cmake
-        find /usr -iname g*test*Config.cmake
+        echo find /usr/local -iname g*test*Config.cmake
+        find /usr/local -iname g*test*Config.cmake
 
     - name: CMake configure --- Ninja, Clang, Debug
       run: |
