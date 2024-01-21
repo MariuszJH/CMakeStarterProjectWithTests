@@ -5,7 +5,7 @@ instead on Windows fetch gtest from github (this builds nicely with source code)
 #]==================================================]
 set(packageName GTest)
 set(packageVersion 1.13.0)
-
+message("#2: GTest_DIR: " ${GTest_DIR})
 #[==================================================[
 Point the path to ${packageName}Config.cmake or ${packageName}-config.cmake
 if the package is not on the standard search path nor in CMAKE_INSTALL_PREFIX

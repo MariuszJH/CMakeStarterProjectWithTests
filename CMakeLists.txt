@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 include(CMakeUtils/Handy/DisplayGenericInfo.cmake) # Comment out to suppress
-
+message("#1: GTest_DIR: " ${GTest_DIR})
 #[==================================================[
 Build tests and mocks
 #]==================================================]
