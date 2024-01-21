@@ -144,13 +144,9 @@ jobs:
         find /usr/local/Cellar/googletest -iname gmock.h
         echo find /usr/local/Cellar/googletest -iname libGTest*
         find /usr/local/Cellar/googletest -iname libGTest*
-        echo find /usr/local/Cellar/googletest -iname *Config.cmake
-        find /usr/local/Cellar/googletest -iname *Config.cmake
 
-        echo find /usr/local -iname libGTest*
-        find /usr/local -iname libGTest*
-        echo find /usr/local -iname *Config.cmake
-        find /usr/local -iname *Config.cmake
+        echo find /usr -iname g*test*Config.cmake
+        find /usr -iname g*test*Config.cmake
 
     - name: Restore GTest from cache; do not reinstall it!
       if: steps.mac-GTest-ID-installed-cache2.outputs.cache-hit == 'true'
@@ -162,13 +158,9 @@ jobs:
         find /usr/local/Cellar/googletest -iname gmock.h
         echo find /usr/local/Cellar/googletest -iname libGTest*
         find /usr/local/Cellar/googletest -iname libGTest*
-        echo find /usr/local/Cellar/googletest -iname *Config.cmake
-        find /usr/local/Cellar/googletest -iname *Config.cmake
 
-        echo find /usr/local -iname libGTest*
-        find /usr/local -iname libGTest*
-        echo find /usr/local -iname *Config.cmake
-        find /usr/local -iname *Config.cmake
+        echo find /usr -iname g*test*Config.cmake
+        find /usr -iname g*test*Config.cmake
 
     - name: CMake configure --- Ninja, Clang, Debug
       run: |
@@ -224,14 +216,14 @@ jobs:
       uses: seanmiddleditch/gha-setup-ninja@master
 
     - name: CMake fetch googletest into External/googletest and cache it or else restore it from cache without fetching again
-      id: windows-GTest-ID-external-cache2
+      id: windows-GTest-ID-installedExternal-cache2
       uses: actions/cache@v3
       with:
         path: External/googletest
-        key: windows-GTest-KEY-external-cache2
+        key: windows-GTest-KEY-installedExternal-cache2
 
     - name: Is googletest cached?
-      if: steps.windows-GTest-ID-external-cache2.outputs.cache-hit == 'true'
+      if: steps.windows-GTest-ID-installedExternal-cache2.outputs.cache-hit == 'true'
       shell: bash
       run: |
         echo YES cached!
@@ -241,7 +233,7 @@ jobs:
         find External/googletest -iname *Config.cmake
 
     - name: Is googletest not yet cached?
-      if: steps.windows-GTest-ID-external .outputs.cache-hit != 'true'
+      if: steps.windows-GTest-ID-installedExternal .outputs.cache-hit != 'true'
       shell: bash
       run: |
         echo NO not yet cached!
