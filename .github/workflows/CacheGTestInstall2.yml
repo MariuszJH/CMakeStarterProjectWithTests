@@ -176,7 +176,7 @@ jobs:
         echo ls /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
         ls /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
 
-    - name: CMake configure --- Ninja, Clang, Debug
+    - name: CMake configure --- Ninja, Clang, Debug -D GTest_DIR=/usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
       run: |
         echo cmake --preset Ninja-Clang-Debug
         cmake --preset Ninja-Clang-Debug
@@ -196,7 +196,7 @@ jobs:
         echo cmake --build --preset Ninja-Clang-Debug --target runUnitTest
         cmake --build --preset Ninja-Clang-Debug --target runUnitTest
 
-    - name: CMake configure --- Ninja, Clang, Release
+    - name: CMake configure --- Ninja, Clang, Release -D GTest_DIR=/usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
       run: |
         echo cmake --preset Ninja-Clang-Release
         cmake --preset Ninja-Clang-Release
