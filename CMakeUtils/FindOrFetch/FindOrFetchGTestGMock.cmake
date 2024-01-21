@@ -30,9 +30,8 @@ if(NOT DEFINED ${packageName}_DIR)
             # set(${packageName}_DIR /opt/googletest/${compilerSubDir}/shared/lib/cmake/GTest)
             set(${packageName}_DIR 
                 /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
-                /usr/local/lib
             )
-            set(GTest_DIR /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest)
+            # set(GTest_DIR /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest)
             message("#3: GTest_DIR: " ${GTest_DIR})
         elseif(UNIX AND NOT APPLE)
             set(${packageName}_DIR )
@@ -42,11 +41,10 @@ if(NOT DEFINED ${packageName}_DIR)
             # set(${packageName}_DIR /opt/googletest/static/lib64/cmake/GTest)
         elseif(APPLE)
             # set(${packageName}_DIR /opt/googletest/${compilerSubDir}/static/lib/cmake/GTest)
-            # set(${packageName}_DIR 
-            #     /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
-            #     /usr/local/lib
-            # )
-            set(GTest_DIR /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest)
+            set(${packageName}_DIR 
+                /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
+            )
+            # set(GTest_DIR /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest)
             message("#4: GTest_DIR: " ${GTest_DIR})
         elseif(UNIX AND NOT APPLE)
             set(${packageName}_DIR )
