@@ -20,7 +20,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
     set(compilerSubDir Gnu)
 endif()
 
-# if(NOT DEFINED ${packageName}_DIR)
+if(NOT DEFINED ${packageName}_DIR)
     message(STATUS "not yet defined: ${packageName}_DIR = " ${${packageName}_DIR})
 
     if(linkGTestAsSharedLibrary)
@@ -53,9 +53,9 @@ endif()
         endif()
     endif()
 
-# else()
-#     message(STATUS "already defined: ${packageName}_DIR = " ${${packageName}_DIR})
-# endif()
+else()
+    message(STATUS "already defined: ${packageName}_DIR = " ${${packageName}_DIR})
+endif()
 
 if(NOT WIN32)
     # Omit the REQUIRED keyword so as to be able to fetch the package (as below) if it is not installed
