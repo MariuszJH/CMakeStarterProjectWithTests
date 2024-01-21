@@ -32,7 +32,7 @@ jobs:
           /usr/include/gmock/
           /usr/lib/x86_64-linux-gnu/libgtest*
           /usr/lib/x86_64-linux-gnu/libgmock*
-          /usr/lib/x86_64-linux-gnu/cmake/
+          /usr/lib/x86_64-linux-gnu/cmake/GTest
         key: linux-GTest-KEY-installed-cache2
 
     - name: Install GTest only if it is not yet cached
@@ -55,8 +55,8 @@ jobs:
         echo find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
         find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
 
-        echo ls /usr/lib/x86_64-linux-gnu/cmake/
-        ls /usr/lib/x86_64-linux-gnu/cmake/
+        echo ls /usr/lib/x86_64-linux-gnu/cmake/GTest
+        ls /usr/lib/x86_64-linux-gnu/cmake/GTest
         
 
     - name: Restore GTest from cache; do not reinstall it!
@@ -74,8 +74,8 @@ jobs:
         echo find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
         find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
 
-        echo ls /usr/lib/x86_64-linux-gnu/cmake/
-        ls /usr/lib/x86_64-linux-gnu/cmake/
+        echo ls /usr/lib/x86_64-linux-gnu/cmake/GTest
+        ls /usr/lib/x86_64-linux-gnu/cmake/GTest
 
     - name: CMake configure --- Ninja, Gnu, Debug
       run: |
@@ -156,8 +156,8 @@ jobs:
         echo find /usr/local -iname g*test*Config.cmake
         find /usr/local -iname g*test*Config.cmake
 
-        echo ls /usr/local/Cellar/googletest/1.14.0/lib/cmake
-        ls /usr/local/Cellar/googletest/1.14.0/lib/cmake
+        echo ls /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
+        ls /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
 
     - name: Restore GTest from cache; do not reinstall it!
       if: steps.mac-GTest-ID-installed-cache2.outputs.cache-hit == 'true'
@@ -173,8 +173,8 @@ jobs:
         echo find /usr/local -iname g*test*Config.cmake
         find /usr/local -iname g*test*Config.cmake
 
-        echo ls /usr/local/Cellar/googletest/1.14.0/lib/cmake
-        ls /usr/local/Cellar/googletest/1.14.0/lib/cmake
+        echo ls /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
+        ls /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
 
     - name: CMake configure --- Ninja, Clang, Debug
       run: |
