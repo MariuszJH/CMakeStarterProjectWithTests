@@ -209,7 +209,7 @@ jobs:
       run: |
         echo cmake --build --preset Ninja-Clang-Release --target runUnitTest
         cmake --build --preset Ninja-Clang-Release --target runUnitTest
-        
+
 
   build-on-windows:
     runs-on: windows-latest
@@ -286,3 +286,4 @@ jobs:
       run: |
         echo cmake --build --preset Ninja-Msvc-Release --target runUnitTest
         cmake --build --preset Ninja-Msvc-Release --target runUnitTest
+
