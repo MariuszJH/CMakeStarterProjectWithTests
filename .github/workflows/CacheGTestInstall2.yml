@@ -46,6 +46,8 @@ jobs:
         echo NO not yet cached!
         echo find /usr/include/gtest -iname gtest.h
         find /usr/include/gtest -iname gtest.h
+        echo find /usr/include/gtest -iname gmock.h
+        find /usr/include/gtest -iname gmock.h
         echo find /usr/lib/x86_64-linux-gnu -iname libGTest.a
         find /usr/lib/x86_64-linux-gnu -iname libGTest.a
         echo find /usr/lib/x86_64-linux-gnu -iname libGTest.so
@@ -59,6 +61,8 @@ jobs:
         echo YES cached!
         echo find /usr/include/gtest -iname gtest.h
         find /usr/include/gtest -iname gtest.h
+        echo find /usr/include/gtest -iname gmock.h
+        find /usr/include/gtest -iname gmock.h
         echo find /usr/lib/x86_64-linux-gnu -iname libGTest.a
         find /usr/lib/x86_64-linux-gnu -iname libGTest.a
         echo find /usr/lib/x86_64-linux-gnu -iname libGTest.so
@@ -94,20 +98,28 @@ jobs:
         brew install googletest
 
         echo NO not yet cached!
-        find /usr/local -iname gtest.h
-        find /usr/local -iname libGTest.a
-        find /usr/local -iname libGTest.so
-        find /usr/local -iname GTest?Config.cmake
+        echo find /usr/local/Cellar/googletest -iname gtest.h
+        find /usr/local/Cellar/googletest -iname gtest.h
+        echo find /usr/local/Cellar/googletest -iname gmock.h
+        find /usr/local/Cellar/googletest -iname gmock.h
+        echo find /usr/local/Cellar/googletest -iname libGTest*
+        find /usr/local/Cellar/googletest -iname libGTest*
+        echo find /usr/local/Cellar/googletest -iname *Config.cmake
+        find /usr/local/Cellar/googletest -iname *Config.cmake
 
     - name: Restore GTest from cache; do not reinstall it!
       if: steps.mac-GTest-ID-installed-cache2.outputs.cache-hit == 'true'
       run: |
         echo YES cached!
-        find /usr/local -iname gtest.h
-        find /usr/local -iname libGTest.a
-        find /usr/local -iname libGTest.so
-        find /usr/local -iname GTest?Config.cmake
-
+        echo find /usr/local/Cellar/googletest -iname gtest.h
+        find /usr/local/Cellar/googletest -iname gtest.h
+        echo find /usr/local/Cellar/googletest -iname gmock.h
+        find /usr/local/Cellar/googletest -iname gmock.h
+        echo find /usr/local/Cellar/googletest -iname libGTest*
+        find /usr/local/Cellar/googletest -iname libGTest*
+        echo find /usr/local/Cellar/googletest -iname *Config.cmake
+        find /usr/local/Cellar/googletest -iname *Config.cmake
+        
 
   build-on-windows:
     runs-on: windows-latest
