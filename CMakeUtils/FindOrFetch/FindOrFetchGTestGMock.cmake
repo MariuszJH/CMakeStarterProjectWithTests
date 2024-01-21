@@ -20,7 +20,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
     set(compilerSubDir Gnu)
 endif()
 
-if(NOT DEFINED ${packageName}_DIR)
+# if(NOT DEFINED ${packageName}_DIR)
     message(STATUS "not yet defined: ${packageName}_DIR = " ${${packageName}_DIR})
 
     if(linkGTestAsSharedLibrary)
@@ -32,6 +32,8 @@ if(NOT DEFINED ${packageName}_DIR)
                 /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
                 /usr/local/lib
             )
+            set(GTest_DIR /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest)
+            message("#3: GTest_DIR: " ${GTest_DIR})
         elseif(UNIX AND NOT APPLE)
             set(${packageName}_DIR )
         endif()
@@ -40,18 +42,20 @@ if(NOT DEFINED ${packageName}_DIR)
             # set(${packageName}_DIR /opt/googletest/static/lib64/cmake/GTest)
         elseif(APPLE)
             # set(${packageName}_DIR /opt/googletest/${compilerSubDir}/static/lib/cmake/GTest)
-            set(${packageName}_DIR 
-                /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
-                /usr/local/lib
-            )
+            # set(${packageName}_DIR 
+            #     /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest
+            #     /usr/local/lib
+            # )
+            set(GTest_DIR /usr/local/Cellar/googletest/1.14.0/lib/cmake/GTest)
+            message("#4: GTest_DIR: " ${GTest_DIR})
         elseif(UNIX AND NOT APPLE)
             set(${packageName}_DIR )
         endif()
     endif()
 
-else()
-    message(STATUS "already defined: ${packageName}_DIR = " ${${packageName}_DIR})
-endif()
+# else()
+#     message(STATUS "already defined: ${packageName}_DIR = " ${${packageName}_DIR})
+# endif()
 
 if(NOT WIN32)
     # Omit the REQUIRED keyword so as to be able to fetch the package (as below) if it is not installed
