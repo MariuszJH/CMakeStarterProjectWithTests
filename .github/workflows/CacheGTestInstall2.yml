@@ -38,23 +38,33 @@ jobs:
     - name: Install GTest only if it is not yet cached
       if: steps.linux-GTest-ID-installed-cache2.outputs.cache-hit != 'true'
       run: |
-        echo brew install sdl2
-        brew install sdl2
+        echo sudo apt-get install libgtest-dev
+        sudo apt-get install libgtest-dev
+        echo sudo apt-get install libgmock-dev
+        sudo apt-get install libgmock-dev
 
         echo NO not yet cached!
-        find /usr -iname gtest.h
-        find /usr -iname libGTest.a
-        find /usr -iname libGTest.so
-        find /usr -iname GTest?Config.cmake
+        echo find /usr/include/gtest -iname gtest.h
+        find /usr/include/gtest -iname gtest.h
+        echo find /usr/lib/x86_64-linux-gnu -iname libGTest.a
+        find /usr/lib/x86_64-linux-gnu -iname libGTest.a
+        echo find /usr/lib/x86_64-linux-gnu -iname libGTest.so
+        find /usr/lib/x86_64-linux-gnu -iname libGTest.so
+        echo find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
+        find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
 
     - name: Restore GTest from cache; do not reinstall it!
       if: steps.linux-GTest-ID-installed-cache2.outputs.cache-hit == 'true'
       run: |
         echo YES cached!
-        find /usr -iname gtest.h
-        find /usr -iname libGTest.a
-        find /usr -iname libGTest.so
-        find /usr -iname GTest?Config.cmake
+        echo find /usr/include/gtest -iname gtest.h
+        find /usr/include/gtest -iname gtest.h
+        echo find /usr/lib/x86_64-linux-gnu -iname libGTest.a
+        find /usr/lib/x86_64-linux-gnu -iname libGTest.a
+        echo find /usr/lib/x86_64-linux-gnu -iname libGTest.so
+        find /usr/lib/x86_64-linux-gnu -iname libGTest.so
+        echo find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
+        find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
 
 
   build-on-macos:
@@ -80,8 +90,8 @@ jobs:
     - name: Install GTest only if it is not yet cached
       if: steps.mac-GTest-ID-installed-cache2.outputs.cache-hit != 'true'
       run: |
-        echo brew install sdl2
-        brew install sdl2
+        echo brew install googletest
+        brew install googletest
 
         echo NO not yet cached!
         find /usr/local -iname gtest.h
@@ -112,14 +122,14 @@ jobs:
       uses: seanmiddleditch/gha-setup-ninja@master
 
     - name: CMake fetch googletest into External/googletest and cache it or else restore it from cache without fetching again
-      id: windows-GTest-ID-external-cache1
+      id: windows-GTest-ID-external-cache2
       uses: actions/cache@v3
       with:
         path: External/googletest
-        key: windows-GTest-KEY-external-cache1
+        key: windows-GTest-KEY-external-cache2
 
     - name: Is googletest cached?
-      if: steps.windows-GTest-ID-external-cache1.outputs.cache-hit == 'true'
+      if: steps.windows-GTest-ID-external-cache2.outputs.cache-hit == 'true'
       shell: bash
       run: |
         echo YES cached!
@@ -129,7 +139,7 @@ jobs:
         find External/googletest -iname *Config.cmake
 
     - name: Is googletest not yet cached?
-      if: steps.windows-GTest-ID-external-cache1.outputs.cache-hit != 'true'
+      if: steps.windows-GTest-ID-external .outputs.cache-hit != 'true'
       shell: bash
       run: |
         echo NO not yet cached!
