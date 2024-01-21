@@ -292,4 +292,3 @@ jobs:
       run: |
         echo cmake --build --preset Ninja-Msvc-Release --target runUnitTest
         cmake --build --preset Ninja-Msvc-Release --target runUnitTest
-
