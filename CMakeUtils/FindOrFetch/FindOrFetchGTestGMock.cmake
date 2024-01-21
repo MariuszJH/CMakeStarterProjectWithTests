@@ -47,7 +47,7 @@ endif()
 
 if(NOT WIN32)
     # Omit the REQUIRED keyword so as to be able to fetch the package (as below) if it is not installed
-    # find_package(${packageName} ${packageVersion})
+    find_package(${packageName} ${packageVersion})
 
     if(${packageName}_FOUND)
         message(STATUS "${packageName}_FOUND: ${${packageName}_FOUND}")

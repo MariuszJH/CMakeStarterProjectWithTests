@@ -1,0 +1,176 @@
+name: Cache GTest Install 2
+
+on:
+  push: 
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+env:
+  projectName: CMakeStarterProjectWithTests
+  SDL_VERSION: 1.13.0
+
+jobs:
+  build-on-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Grant tar root ownership and execution (needed to untar cached objects)
+      run: sudo chown root /usr/bin/tar && sudo chmod u+s /usr/bin/tar
+
+    - name: Cache GTest (if not yet cached) or else restore it from cache (if cached already)
+      id: linux-GTest-ID-installed-cache2
+      uses: actions/cache@v3
+      with:
+        path: |
+          /usr/include/gtest/
+          /usr/include/gmock/
+          /usr/lib/x86_64-linux-gnu/libgtest*
+          /usr/lib/x86_64-linux-gnu/libgmock*
+          /usr/lib/x86_64-linux-gnu/cmake/
+        key: linux-GTest-KEY-installed-cache2
+
+    - name: Install GTest only if it is not yet cached
+      if: steps.linux-GTest-ID-installed-cache2.outputs.cache-hit != 'true'
+      run: |
+        echo brew install sdl2
+        brew install sdl2
+
+        echo NO not yet cached!
+        find /usr -iname gtest.h
+        find /usr -iname libGTest.a
+        find /usr -iname libGTest.so
+        find /usr -iname GTest?Config.cmake
+
+    - name: Restore GTest from cache; do not reinstall it!
+      if: steps.linux-GTest-ID-installed-cache2.outputs.cache-hit == 'true'
+      run: |
+        echo YES cached!
+        find /usr -iname gtest.h
+        find /usr -iname libGTest.a
+        find /usr -iname libGTest.so
+        find /usr -iname GTest?Config.cmake
+
+
+  build-on-macos:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Cache GTest (if not yet cached) or else restore it from cache (if cached already)
+      id: mac-GTest-ID-installed-cache2
+      uses: actions/cache@v3
+      with:
+        path: |
+          /usr/local/Cellar/googletest/1.14.0/include
+          /usr/local/lib/libgtest*
+          /usr/local/lib/libgmock*
+          /usr/local/lib/cmake/GTest/
+        key: mac-GTest-KEY-installed-cache2
+
+    - name: Install GTest only if it is not yet cached
+      if: steps.mac-GTest-ID-installed-cache2.outputs.cache-hit != 'true'
+      run: |
+        echo brew install sdl2
+        brew install sdl2
+
+        echo NO not yet cached!
+        find /usr/local -iname gtest.h
+        find /usr/local -iname libGTest.a
+        find /usr/local -iname libGTest.so
+        find /usr/local -iname GTest?Config.cmake
+
+    - name: Restore GTest from cache; do not reinstall it!
+      if: steps.mac-GTest-ID-installed-cache2.outputs.cache-hit == 'true'
+      run: |
+        echo YES cached!
+        find /usr/local -iname gtest.h
+        find /usr/local -iname libGTest.a
+        find /usr/local -iname libGTest.so
+        find /usr/local -iname GTest?Config.cmake
+
+
+  build-on-windows:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Setup MSVC compiler
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Install Ninja
+      uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: CMake fetch googletest into External/googletest and cache it or else restore it from cache without fetching again
+      id: windows-GTest-ID-external-cache1
+      uses: actions/cache@v3
+      with:
+        path: External/googletest
+        key: windows-GTest-KEY-external-cache1
+
+    - name: Is googletest cached?
+      if: steps.windows-GTest-ID-external-cache1.outputs.cache-hit == 'true'
+      shell: bash
+      run: |
+        echo YES cached!
+        find External/googletest -iname gtest.h
+        find External/googletest -iname gmock.h
+        find External/googletest -iname lib*
+        find External/googletest -iname *Config.cmake
+
+    - name: Is googletest not yet cached?
+      if: steps.windows-GTest-ID-external-cache1.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        echo NO not yet cached!
+        ls 
+
+    - name: CMake configure --- Ninja, Msvc, Debug
+      run: |
+        echo cmake --preset Ninja-Msvc-Debug
+        cmake --preset Ninja-Msvc-Debug
+
+    - name: CMake build --- Ninja, Msvc, Debug
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Debug
+        cmake --build --preset Ninja-Msvc-Debug
+
+    - name: CMake run program --- Ninja, Msvc, Debug
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Debug --target run
+        cmake --build --preset Ninja-Msvc-Debug --target run
+
+    - name: CMake run unit tests --- Ninja, Msvc, Debug
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Debug --target runUnitTest
+        cmake --build --preset Ninja-Msvc-Debug --target runUnitTest
+
+    - name: CMake configure --- Ninja, Msvc, Release
+      run: |
+        echo cmake --preset Ninja-Msvc-Release
+        cmake --preset Ninja-Msvc-Release
+
+    - name: CMake build --- Ninja, Msvc, Release
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Release
+        cmake --build --preset Ninja-Msvc-Release
+
+    - name: CMake run program --- Ninja, Msvc, Release
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Release --target run
+        cmake --build --preset Ninja-Msvc-Release --target run
+
+    - name: CMake run unit tests --- Ninja, Msvc, Release
+      run: |
+        echo cmake --build --preset Ninja-Msvc-Release --target runUnitTest
+        cmake --build --preset Ninja-Msvc-Release --target runUnitTest
