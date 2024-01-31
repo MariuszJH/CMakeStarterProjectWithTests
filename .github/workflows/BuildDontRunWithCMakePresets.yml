@@ -122,7 +122,7 @@ jobs:
       if: steps.ID-GTest-fetched-cache.outputs.cache-hit != 'true'
       run: |
         echo NO not yet cached!
-        ls External
+        ls 
 
 # LINUX: On Linux do not cache GTest which has been installed with apt-get because it is tied to too many dependencies which would also need to be cached (and that's too difficult)
     - name: Install GTest on Linux with package manager only if it has not been fetched by CMake
