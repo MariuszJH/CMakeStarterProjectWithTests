@@ -178,7 +178,7 @@ jobs:
         find /usr/local/Cellar/googletest -iname libgmock*.dylib
         find /usr/local/Cellar/googletest -iname GTest?Config.cmake
 
-    - name: Restore SDL2 on Mac from cache; do not reinstall it!
+    - name: Restore GTest on Mac from cache; do not reinstall it!
       if: ${{ (matrix.os == 'macos-latest') && (steps.mac-ID-GTest-installed-cache.outputs.cache-hit == 'true') }}
       run: |
         echo YES cached!
@@ -195,54 +195,209 @@ jobs:
         find /usr/local/Cellar/googletest -iname GTest?Config.cmake
 
 # WINDOWS
-    # - name: On Windows (with GTest binaries installed) cache GTest (if not yet cached) or else restore it from cache (if cached already)
-    #   if: ${{matrix.os == 'windows-latest'}}
-    #   id: windows-ID-GTest-installed-cache
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: C:\GTest
-    #     key: windows-KEY-GTest-installed-cache
 
-    # - name: Install GTest on Windows if it is not yet cached
-    #   if: ${{ (matrix.os == 'windows-latest') && (steps.windows-ID-GTest-installed-cache.outputs.cache-hit != 'true') && (steps.ID-GTest-fetched-cache.outputs.cache-hit != 'true') }}
-    #   shell: powershell
-    #   run: |
-    #     Write-Host 'Invoke-WebRequest "https://github.com/libsdl-org/SDL/releases/download/release-$env:GTEST_VERSION/SDL2-devel-$env:GTEST_VERSION-VC.zip" -o C:\SDL.zip'
-    #     Invoke-WebRequest "https://github.com/libsdl-org/SDL/releases/download/release-$env:GTEST_VERSION/SDL2-devel-$env:GTEST_VERSION-VC.zip" -o C:\SDL.zip
+    - name: Tool versions
+      shell: bash
+      run: |
+        if [[ ${{matrix.os == 'windows-latest'}} == "true" ]]; then
+          echo cl
+          cl
+          echo
+        fi
+        echo g++ --version
+        g++ --version
+        echo 
+        echo clang++ --version
+        clang++ --version
+        echo 
+        echo cmake --version
+        cmake --version
+        echo 
+        echo ninja --version
+        ninja --version
+
+    - name: Parameter values
+      shell: bash
+      run: | 
+        echo platform = ${{runner.os}}
+        echo preset = ${{matrix.preset}}
+
+    - name: CMake configure
+      run: cmake --preset ${{matrix.preset}}
+      
+    - name: CMake build
+      run: cmake --build --preset ${{matrix.preset}}
+
+#====================
+# Comment out because Github Action will launch the GUI but will not be able to stop it
+# so it would run indefinitely, and there is no way to interact with the GUI anyway.
+#====================
+    # - name: CMake run program
+    #   run: cmake --build --preset ${{matrix.preset}} --target run
+
+
+  multiConfig:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        preset:
+        # multi config generators
+          - NinjaMC-Msvc
+          - NinjaMC-Gnu
+          - NinjaMC-Clang
+          - VSx32-Msvc
+          - VSx64-Msvc
+          - Xcode-Clang
+        build_type: [Debug, Release]
+
+        exclude:
+        # Ubuntu doesn't have MSVC compiler
+        # Ubuntu doesn't have Visual Studio nor Xcode generators
+          - os: ubuntu-latest
+            preset: NinjaMC-Msvc
+          - os: ubuntu-latest
+            preset: VSx32-Msvc
+          - os: ubuntu-latest
+            preset: VSx64-Msvc
+          - os: ubuntu-latest
+            preset: Xcode-Clang
+
+        # Mac doesn't have MSVC nor GNU compiler (its Gnu is an alias for Clang compiler)
+        # Mac doesn't have Visual Studio generator
+          - os: macos-latest
+            preset: NinjaMC-Gnu
+          - os: macos-latest
+            preset: NinjaMC-Msvc
+          - os: macos-latest
+            preset: VSx32-Msvc
+          - os: macos-latest
+            preset: VSx64-Msvc
+
+        # Windows doesn't have GNU nor Clang compilers
+        # Windows doesn't have Xcode generator
+          - os: windows-latest
+            preset: NinjaMC-Gnu
+          - os: windows-latest
+            preset: NinjaMC-Clang
+          - os: windows-latest
+            preset: Xcode-Clang
         
-    #     Write-Host Expand-Archive C:\SDL.zip -DestinationPath C:\GTest
-    #     Expand-Archive C:\SDL.zip -DestinationPath C:\GTest
+    runs-on: ${{matrix.os}}
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install MSVC compiler
+      if: ${{matrix.os == 'windows-latest'}}
+      uses: ilammy/msvc-dev-cmd@v1
         
-    #     Write-Host ls C:\GTest -Include SDL.h -Recurse -Name
-    #     ls C:\GTest -Include SDL.h -Recurse -Name
-    #     Write-Host ls C:\GTest -Include SDL2.lib -Recurse -Name
-    #     ls C:\GTest -Include SDL2.lib -Recurse -Name
-    #     Write-Host ls C:\GTest -Include SDL2.dll -Recurse -Name
-    #     ls C:\GTest -Include SDL2.dll -Recurse -Name
-    #     Write-Host ls C:\GTest -Include SDL2?Config.cmake -Recurse -Name
-    #     ls C:\GTest -Include SDL2?Config.cmake -Recurse -Name
+    # - name: Install Ninja
+    #   uses: seanmiddleditch/gha-setup-ninja@master
+    - name: Install Ninja
+      shell: bash
+      run: ${{ runner.os == 'macOS' && 'brew install ninja' || runner.os == 'Windows' && 'choco install ninja' || 'sudo apt-get install ninja-build' }}
 
-    #     Write-Host ls C:\GTest\SDL2-2.28.5\include -Name
-    #     ls C:\GTest\SDL2-2.28.5\include -Name
-    #     Write-Host ls C:\GTest\SDL2-2.28.5\lib\x86 -Name
-    #     ls C:\GTest\SDL2-2.28.5\lib\x86 -Name
-    #     Write-Host ls C:\GTest\SDL2-2.28.5\lib\x64 -Name
-    #     ls C:\GTest\SDL2-2.28.5\lib\x64 -Name
-    #     Write-Host ls C:\GTest\SDL2-2.28.5\cmake -Name
-    #     ls C:\GTest\SDL2-2.28.5\cmake -Name
+    - name: Cache GTest if it has beed fetched by CMake or else restore it from cache without fetching again
+      id: ID-GTest-fetched-cache
+      uses: actions/cache@v3
+      with:
+        path: External/googletest
+        key: KEY-GTest-fetched-cache
 
-    # - name: Restore SDL2 on Windows from cache; do not reinstall it!
-    #   if: ${{ (matrix.os == 'windows-latest') && (steps.windows-ID-GTest-installed-cache.outputs.cache-hit == 'true') }}
-    #   shell: powershell
-    #   run: |
-    #     echo YES cached!
-    #     ls C:\GTest -Include SDL.h -Recurse -Name
-    #     ls C:\GTest -Include SDL2.lib -Recurse -Name
-    #     ls C:\GTest -Include SDL2.dll -Recurse -Name
-    #     ls C:\GTest -Include SDL2?Config.cmake -Recurse -Name
+    - name: Is fetched googletest cached?
+      if: steps.ID-GTest-fetched-cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: |
+        echo YES cached!
+        find External/googletest -iname gtest.h
+        find External/googletest -iname gmock.h
+        find External/googletest -iname libgtest*.a
+        find External/googletest -iname libgtest*.so
+        find External/googletest -iname libgtest*.dll
+        find External/googletest -iname libgmock*.a
+        find External/googletest -iname libgmock*.so
+        find External/googletest -iname libgmock*.dll
+        find External/googletest -iname GTest?Config.cmake
 
-    #     echo ls C:\GTest\SDL2-2.28.5\include -Name
-    #     ls C:\GTest\SDL2-2.28.5\include -Name
+    - name: Is fetched googletest not yet cached?
+      if: steps.ID-GTest-fetched-cache.outputs.cache-hit != 'true'
+      run: |
+        echo NO not yet cached!
+        ls 
+
+# LINUX: On Linux do not cache GTest which has been installed with apt-get because it is tied to too many dependencies which would also need to be cached (and that's too difficult)
+    - name: Install GTest on Linux with package manager only if it has not been fetched by CMake
+      if: ${{ (matrix.os == 'ubuntu-latest') && (hashFiles('External/googletest/CMakeLists.txt') == '') && (steps.ID-GTest-fetched-cache.outputs.cache-hit != 'true') }}
+      run: |
+        echo sudo apt-get update
+        sudo apt-get update
+        echo sudo apt-get upgrade
+        sudo apt-get upgrade
+        echo sudo apt-get install libgtest-dev
+        sudo apt-get install libgtest-dev
+        echo sudo apt-get install libgmock-dev
+        sudo apt-get install libgmock-dev
+
+        echo find /usr/include/gtest -iname gtest.h
+        find /usr/include/gtest -iname gtest.h
+        echo find /usr/include/gmock -iname gmock.h
+        find /usr/include/gmock -iname gmock.h
+        echo find /usr/lib/x86_64-linux-gnu -iname libGTest.a
+        find /usr/lib/x86_64-linux-gnu -iname libGTest.a
+        echo find /usr/lib/x86_64-linux-gnu -iname libGTest.so
+        find /usr/lib/x86_64-linux-gnu -iname libGTest.so
+        echo find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
+        find /usr/lib/x86_64-linux-gnu/cmake/GTest -iname GTest?Config.cmake
+
+        echo ls /usr/lib/x86_64-linux-gnu/cmake/GTest
+        ls /usr/lib/x86_64-linux-gnu/cmake/GTest
+
+# MAC OS
+    - name: On Mac (with GTest installed by package manager) cache GTest (if not yet cached) or else restore it from cache (if cached already)
+      if: ${{matrix.os == 'macos-latest'}}
+      id: mac-ID-GTest-installed-cache
+      uses: actions/cache@v3
+      with:
+        path: /usr/local/Cellar/googletest
+        key: mac-KEY-GTest-installed-cache
+
+    - name: Install GTest on Mac if it is not yet cached
+      if: ${{ (matrix.os == 'macos-latest') && (steps.mac-ID-GTest-installed-cache.outputs.cache-hit != 'true') && (steps.ID-GTest-fetched-cache.outputs.cache-hit != 'true') }}
+      run: |
+        echo brew install googletest
+        brew install googletest
+
+        find /usr/local/Cellar/googletest -iname gtest.h
+        find /usr/local/Cellar/googletest -iname gmock.h
+        find /usr/local/Cellar/googletest -iname libgtest*.a
+        find /usr/local/Cellar/googletest -iname libgtest*.so
+        find /usr/local/Cellar/googletest -iname libgtest*.dll
+        find /usr/local/Cellar/googletest -iname libgtest*.dylib
+        find /usr/local/Cellar/googletest -iname libgmock*.a
+        find /usr/local/Cellar/googletest -iname libgmock*.so
+        find /usr/local/Cellar/googletest -iname libgmock*.dll
+        find /usr/local/Cellar/googletest -iname libgmock*.dylib
+        find /usr/local/Cellar/googletest -iname GTest?Config.cmake
+
+    - name: Restore GTest on Mac from cache; do not reinstall it!
+      if: ${{ (matrix.os == 'macos-latest') && (steps.mac-ID-GTest-installed-cache.outputs.cache-hit == 'true') }}
+      run: |
+        echo YES cached!
+        find /usr/local/Cellar/googletest -iname gtest.h
+        find /usr/local/Cellar/googletest -iname gmock.h
+        find /usr/local/Cellar/googletest -iname libgtest*.a
+        find /usr/local/Cellar/googletest -iname libgtest*.so
+        find /usr/local/Cellar/googletest -iname libgtest*.dll
+        find /usr/local/Cellar/googletest -iname libgtest*.dylib
+        find /usr/local/Cellar/googletest -iname libgmock*.a
+        find /usr/local/Cellar/googletest -iname libgmock*.so
+        find /usr/local/Cellar/googletest -iname libgmock*.dll
+        find /usr/local/Cellar/googletest -iname libgmock*.dylib
+        find /usr/local/Cellar/googletest -iname GTest?Config.cmake
+
+# WINDOWS
 
     - name: Tool versions
       shell: bash
