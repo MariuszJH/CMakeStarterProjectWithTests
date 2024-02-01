@@ -15,70 +15,55 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        preset:
-        # single config generators
-          - Ninja-Msvc-Debug
-          - Ninja-Msvc-Release
-          - Ninja-Gnu-Debug
-          - Ninja-Gnu-Release
-          - Ninja-Clang-Debug
-          - Ninja-Clang-Release
-          - NMake-Msvc-Debug
-          - NMake-Msvc-Release
-          - Make-Gnu-Debug
-          - Make-Gnu-Release
-          - Make-Clang-Debug
-          - Make-Clang-Release
+        compilerCpp: 
+          - name: g++
+            buildSubDir: Gnu
+          - name: clang++
+            buildSubDir: Clang
+          - name: cl
+            buildSubDir: Msvc
+        buildType: [Debug, Release]
+        generator: 
+          - name: Ninja
+            buildDir: buildNinja
+          - name: "Unix Makefiles"
+            buildDir: buildMake
+          - name: "NMake Makefiles"
+            buildDir: buildNMake
 
         exclude:
         # Ubuntu doesn't have MSVC compiler
         # Ubuntu doesn't have NMake generator
           - os: ubuntu-latest
-            preset: Ninja-Msvc-Debug
+            compilerCpp: 
+              name: cl
           - os: ubuntu-latest
-            preset: Ninja-Msvc-Release
-          - os: ubuntu-latest
-            preset: NMake-Msvc-Debug
-          - os: ubuntu-latest
-            preset: NMake-Msvc-Release
+            generator: 
+              name: "NMake Makefiles"
 
         # Mac doesn't have MSVC nor GNU compiler (its Gnu is an alias for Clang compiler)
         # Ubuntu doesn't have NMake generator
           - os: macos-latest
-            preset: Ninja-Gnu-Debug
+            compilerCpp: 
+              name: cl
           - os: macos-latest
-            preset: Ninja-Gnu-Release
+            compilerCpp:
+              name: g++
           - os: macos-latest
-            preset: Ninja-Msvc-Debug
-          - os: macos-latest
-            preset: Ninja-Msvc-Release
-          - os: macos-latest
-            preset: NMake-Msvc-Debug
-          - os: macos-latest
-            preset: NMake-Msvc-Release
-          - os: macos-latest
-            preset: NMake-Gnu-Debug
-          - os: macos-latest
-            preset: NMake-Gnu-Release
+            generator: 
+              name: "NMake Makefiles"
 
         # Windows doesn't have GNU nor Clang compilers
         # Windows doesn't have Make generator
           - os: windows-latest
-            preset: Ninja-Gnu-Debug
+            compilerCpp: 
+              name: g++
           - os: windows-latest
-            preset: Ninja-Gnu-Release
+            compilerCpp: 
+              name: clang++
           - os: windows-latest
-            preset: Ninja-Clang-Debug
-          - os: windows-latest
-            preset: Ninja-Clang-Release
-          - os: windows-latest
-            preset: Make-Gnu-Debug
-          - os: windows-latest
-            preset: Make-Gnu-Release
-          - os: windows-latest
-            preset: Make-Clang-Debug
-          - os: windows-latest
-            preset: Make-Clang-Release
+            generator: 
+              name: "Unix Makefiles"
 
     runs-on: ${{matrix.os}}
 
@@ -255,93 +240,55 @@ jobs:
         name: Binaries_${{env.projectName}}_${{runner.os}}_${{matrix.generator.buildDir}}_${{matrix.compilerCpp.buildSubDir}}
         path: ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}}/buildOut
 
-    - name: Parameter values
-      shell: bash
-      run: | 
-        echo platform = ${{runner.os}}
-        echo generator = ${{matrix.generator.name}}
-        echo buildType = ${{matrix.buildType}}
-        echo compiler = ${{matrix.compilerCpp.name}}
-
-    - name: CMake configure
-      run: > 
-        cmake -S . 
-        -B ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
-        -G "${{matrix.generator.name}}" 
-        -D CMAKE_CXX_COMPILER=${{matrix.compilerCpp.name}}
-      
-    - name: CMake build
-      run: > 
-        cmake 
-        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
-        -j8
-        --config ${{matrix.buildType}}
-
-#====================
-# Comment out because Github Action will launch the GUI but will not be able to stop it
-# so it would run indefinitely, and there is no way to interact with the GUI anyway.
-#====================
-    # - name: CMake run
-    #   run: > 
-    #     cmake 
-    #     --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
-    #     -j8 
-    #     --config ${{matrix.buildType}}
-    #     --target run
-
-    - name: Archive build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: Binaries_${{env.projectName}}_${{runner.os}}_${{matrix.generator.buildDir}}_${{matrix.compilerCpp.buildSubDir}}
-        path: ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}}/buildOut
-
 
   multiConfig:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        preset:
-        # multi config generators
-          - NinjaMC-Msvc
-          - NinjaMC-Gnu
-          - NinjaMC-Clang
-          - VSx32-Msvc
-          - VSx64-Msvc
-          - Xcode-Clang
-        build_type: [Debug, Release]
+        compilerCpp: 
+          - name: g++
+            buildSubDir: Gnu
+          - name: clang++
+            buildSubDir: Clang
+          - name: cl
+            buildSubDir: Msvc
+        buildType: [Debug, Release]
+        generator: 
+          - name: "Ninja Multi-Config"
+            buildDir: buildNinjaMC
+          - name: Xcode
+            buildDir: buildXcode
 
         exclude:
         # Ubuntu doesn't have MSVC compiler
-        # Ubuntu doesn't have Visual Studio nor Xcode generators
+        # Ubuntu doesn't have NMake nor Visual Studio nor Xcode generators
           - os: ubuntu-latest
-            preset: NinjaMC-Msvc
+            compilerCpp: 
+              name: cl
           - os: ubuntu-latest
-            preset: VSx32-Msvc
-          - os: ubuntu-latest
-            preset: VSx64-Msvc
-          - os: ubuntu-latest
-            preset: Xcode-Clang
+            generator: 
+              name: Xcode
 
         # Mac doesn't have MSVC nor GNU compiler (its Gnu is an alias for Clang compiler)
         # Mac doesn't have Visual Studio generator
           - os: macos-latest
-            preset: NinjaMC-Gnu
+            compilerCpp: 
+              name: cl
           - os: macos-latest
-            preset: NinjaMC-Msvc
-          - os: macos-latest
-            preset: VSx32-Msvc
-          - os: macos-latest
-            preset: VSx64-Msvc
+            compilerCpp:
+              name: g++
 
         # Windows doesn't have GNU nor Clang compilers
         # Windows doesn't have Xcode generator
           - os: windows-latest
-            preset: NinjaMC-Gnu
+            compilerCpp: 
+              name: g++
           - os: windows-latest
-            preset: NinjaMC-Clang
+            compilerCpp: 
+              name: clang++
           - os: windows-latest
-            preset: Xcode-Clang
+            generator: 
+              name: Xcode
         
     runs-on: ${{matrix.os}}
 
@@ -481,20 +428,41 @@ jobs:
       shell: bash
       run: | 
         echo platform = ${{runner.os}}
-        echo preset = ${{matrix.preset}}
+        echo generator = ${{matrix.generator.name}}
+        echo buildType = ${{matrix.buildType}}
+        echo compiler = ${{matrix.compilerCpp.name}}
 
     - name: CMake configure
-      run: cmake --preset ${{matrix.preset}}
+      run: > 
+        cmake -S . 
+        -B ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -G "${{matrix.generator.name}}" 
+        -D CMAKE_CXX_COMPILER=${{matrix.compilerCpp.name}}
       
     - name: CMake build
-      run: cmake --build --preset ${{matrix.preset}}
+      run: > 
+        cmake 
+        --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+        -j8
+        --config ${{matrix.buildType}}
 
 #====================
 # Comment out because Github Action will launch the GUI but will not be able to stop it
 # so it would run indefinitely, and there is no way to interact with the GUI anyway.
 #====================
-    # - name: CMake run program
-    #   run: cmake --build --preset ${{matrix.preset}} --target run
+    # - name: CMake run
+    #   run: > 
+    #     cmake 
+    #     --build ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}} 
+    #     -j8 
+    #     --config ${{matrix.buildType}}
+    #     --target run
+
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Binaries_${{env.projectName}}_${{runner.os}}_${{matrix.generator.buildDir}}_${{matrix.compilerCpp.buildSubDir}}
+        path: ${{matrix.generator.buildDir}}/${{matrix.compilerCpp.buildSubDir}}/buildOut
 
 
   multiArchitecture:
